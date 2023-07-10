@@ -58,13 +58,13 @@ class DiaryCoreApplicationTests {
 
 	@Test
 	public void esSearch() throws IOException {
-		String searchText = "yya";
+		String searchText = "ceyyasysbahsa-1689002966864";
 
 		SearchResponse<Author> response = elasticsearchClient.search(s -> s
 						.index("author_demo")
 						.query(q -> q
 								.match(t -> t
-										.field("_all")
+										.field("authorAvatarUrl")
 										.query(searchText)
 								)
 						),
