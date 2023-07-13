@@ -11,6 +11,8 @@ public class DiaryContent {
 
     private String diaryId;
 
+    private String authorId;
+
     private String content;
 
 }

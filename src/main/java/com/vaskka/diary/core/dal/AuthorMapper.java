@@ -16,8 +16,6 @@ public interface AuthorMapper {
             "#{authorName}, #{authorAvatarUrl}, #{externParam})")
     Integer insertAuthor(AuthorDO authorDO);
 
-    List<AuthorDO> findAllAuthor();
-
     @Select(value = "SELECT id, gmt_create, gmt_modified, author_name, author_avatar_url, extern_param " +
             "FROM author au where au.id=#{id}")
     AuthorDO findById(@Param("id") Long id);

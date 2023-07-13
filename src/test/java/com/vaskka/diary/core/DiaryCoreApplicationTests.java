@@ -11,6 +11,7 @@ import com.vaskka.diary.core.model.bizobject.Author;
 import com.vaskka.diary.core.model.bizobject.DiaryContent;
 import com.vaskka.diary.core.utils.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -96,6 +97,11 @@ class DiaryCoreApplicationTests {
 			// log.info("highLight:{}", JSONObject.toJSONString(hit.highlight()));
 			log.info("Found product " + content + ", score " + hit.score());
 		}
+	}
+
+	@Test
+	public void dateTest() {
+		Assertions.assertEquals("1969-12-29 23:36:35.889", CommonUtil.getDateTimeDetailStr(-203004111));
 	}
 
 

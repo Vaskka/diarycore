@@ -2,15 +2,14 @@ package com.vaskka.diary.core.model.bizobject;
 
 import lombok.Data;
 
-import java.time.LocalDateTime;
 
 @Data
 public class Diary {
+
+    /**
+     * 某篇具体的日记的id,暂时也用作content内容的id
+     */
     private String diaryId;
-
-    private Author author;
-
-    private String diaryTitle;
 
     private String subTitle;
 
@@ -18,6 +17,11 @@ public class Diary {
      * 日记记录的时间戳
      */
     private Long diaryDateTimestamp;
+
+    /**
+     * 日记记录的日期 字符串
+     */
+    private String diaryDateTimeStr;
 
     private String startPage;
 

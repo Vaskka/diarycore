@@ -5,9 +5,9 @@ import lombok.Getter;
 public enum BizPart {
     USER(0),
 
-    ORDER(1),
+    AUTHOR(1),
 
-    RECORD(2),
+    DIARY(2),
 
     ;
 

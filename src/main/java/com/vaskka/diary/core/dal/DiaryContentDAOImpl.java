@@ -72,7 +72,7 @@ public class DiaryContentDAOImpl implements DiaryContentDAO {
     @Override
     public List<DiaryContent> simpleSearch(String searchText) {
         var res = new ArrayList<DiaryContent>();
-        SearchResponse<DiaryContent> response = null;
+        SearchResponse<DiaryContent> response;
         try {
             response = elasticsearchClient.search(s -> s
                             .index(DIARY_CONTENT_INDEX)
