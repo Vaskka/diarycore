@@ -15,8 +15,8 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(value = {
             AuthException.class
     })
-    public CommonResponse handleAuthException(AuthException authException) {
-        return ResultCodeUtil.buildCommonResponse(CommonResponse::new, ResultCodeEnum.NEED_LOGIN);
+    public CommonResponse<Object> handleAuthException(AuthException authException) {
+        return ResultCodeUtil.buildCommonResponse(CommonResponse::new, null, ResultCodeEnum.NEED_LOGIN);
     }
 
 }

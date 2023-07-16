@@ -35,6 +35,18 @@ public class SearchCondition {
 
             return pickContent.contains(t);
         }
+
+        /**
+         * build instance
+         * @param content content
+         * @return picker
+         * @param <T> content type
+         */
+        public static <T> MultiPicker<T> build(List<T> content) {
+            var res = new MultiPicker<T>();
+            res.setPickContent(content);
+            return res;
+        }
     }
 
     private String searchText;
