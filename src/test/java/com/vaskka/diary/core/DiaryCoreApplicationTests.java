@@ -15,12 +15,14 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.io.IOException;
 import java.util.List;
 
 @Slf4j
 @SpringBootTest
+@ActiveProfiles("w")
 class DiaryCoreApplicationTests {
 
 	@Autowired
@@ -33,24 +35,34 @@ class DiaryCoreApplicationTests {
 	@Test
 	public void esTestInsertDiaryContent() throws IOException {
 		DiaryContent diaryContent_0 = new DiaryContent();
-		diaryContent_0.setDiaryId(CommonUtil.getRandom32LengthStr());
+		diaryContent_0.setDiaryId("1");
 		diaryContent_0.setContent("来拜者十八人，午餐者三人。<br>凡来拜者，皆言年月不佳，世困民穷，四民均失其业，不知今岁又将何如也。");
 		IndexResponse response_0 = elasticsearchClient.index(i -> i
-				.index("diary_content_test")
+				.index("diary_content_idx")
 				.id(diaryContent_0.getDiaryId())
 				.document(diaryContent_0)
 		);
 		log.info(response_0.toString());
 
 		DiaryContent diaryContent_1 = new DiaryContent();
-		diaryContent_1.setDiaryId(CommonUtil.getRandom32LengthStr());
+		diaryContent_1.setDiaryId("2");
 		diaryContent_1.setContent("人心不正，莫甚于斯时。至学堂之学生，尤不正之至者矣，学生所学，一以西人之学为宗旨，无父无君，皆习为固然，故入革命党者十居八九，时局不甚可畏哉！");
 		IndexResponse response_1 = elasticsearchClient.index(i -> i
-				.index("diary_content_test")
+				.index("diary_content_idx")
 				.id(diaryContent_1.getDiaryId())
 				.document(diaryContent_1)
 		);
 		log.info(response_1.toString());
+
+		DiaryContent diaryContent_2 = new DiaryContent();
+		diaryContent_2.setDiaryId("2");
+		diaryContent_2.setContent("吃饭中");
+		IndexResponse response_2 = elasticsearchClient.index(i -> i
+				.index("diary_content_idx")
+				.id(diaryContent_2.getDiaryId())
+				.document(diaryContent_2)
+		);
+		log.info(response_2.toString());
 
 	}
 

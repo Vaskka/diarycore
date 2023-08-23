@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -32,6 +33,7 @@ public class DiaryServiceImpl implements DiaryFacade {
 
     @Override
     public DiaryWrapper findByAuthor(String authorId) {
+        LogUtil.infof(log, "[daily],find by {}", authorId);
         var author = authorServiceImpl.findById(authorId);
         if (author == null) {
             LogUtil.errorf(log, "[daily],auth not exist,authId:{}", authorId);
@@ -39,6 +41,27 @@ public class DiaryServiceImpl implements DiaryFacade {
         }
 
         List<DiaryDO> diaryDOList = diaryMapper.findByAuthorId(Long.parseLong(author.getAuthorId()));
+        return buildDiaryWrapper(diaryDOList, author);
+    }
+
+    @Override
+    public DiaryWrapper findByAuthorAndDate(String authorId, String dateInStr) {
+        LogUtil.infof(log, "[daily],find by {} and {}", authorId, dateInStr);
+        var author = authorServiceImpl.findById(authorId);
+        if (author == null) {
+            LogUtil.errorf(log, "[daily],auth not exist,authId:{}", authorId);
+            throw new AuthorNotExistException();
+        }
+
+        List<DiaryDO> diaryDOList = diaryMapper.findByAuthorId(Long.parseLong(author.getAuthorId()))
+                .stream()
+                .filter(diaryDO -> {
+                    long incomm = CommonUtil.parseStrDate2Timestamp(dateInStr);
+                    long indb = diaryDO.getDiaryDateTimestamp();
+                    LogUtil.infof(log, "[compare],incomming={},indb={}", incomm, indb);
+                    return Objects.equals(indb, incomm);
+                })
+                .collect(Collectors.toList());
         return buildDiaryWrapper(diaryDOList, author);
     }
 
@@ -68,6 +91,8 @@ public class DiaryServiceImpl implements DiaryFacade {
 
     private Diary buildDiary(DiaryDO diaryDO) {
         Diary diary = new Diary();
+        diary.setAuthorId(String.valueOf(diaryDO.getAuthorId()));
+        diary.setAuthorName(authorServiceImpl.findById(String.valueOf(diaryDO.getAuthorId())).getAuthorName());
         diary.setDiaryId(String.valueOf(diaryDO.getId()));
         diary.setSubTitle(diaryDO.getSubTitle());
         diary.setDiaryDateTimestamp(diaryDO.getDiaryDateTimestamp());

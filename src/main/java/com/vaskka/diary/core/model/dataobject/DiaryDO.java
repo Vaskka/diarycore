@@ -27,6 +27,8 @@ public class DiaryDO {
 
     private String originPic;
 
+    private String comment;
+
     private String externParam;
 
 }

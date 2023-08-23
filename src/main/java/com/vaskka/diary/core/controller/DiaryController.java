@@ -21,10 +21,21 @@ public class DiaryController extends NeedAuthController {
 
     @Operation(summary = "根据作者获取作者全部的日记")
     @PostMapping(value = "/find/author/{authorId}")
-    public DiaryWrapperResponse findByAuth(@PathVariable(value = "authorId") String authorId, @RequestBody NeedAuthRequest request) {
+    public DiaryWrapperResponse findByAuth(@PathVariable(value = "authorId") String authorId,
+                                           @RequestBody NeedAuthRequest request) {
         var data = diaryServiceImpl.findByAuthor(authorId);
         return ResultCodeUtil.buildCommonResponse(DiaryWrapperResponse::new, data, ResultCodeEnum.OK);
     }
+
+    @Operation(summary = "根据作者获取作者全部的日记")
+    @PostMapping(value = "/find/author/{authorId}/{date}")
+    public DiaryWrapperResponse findByAuthAndDate(@PathVariable(value = "authorId") String authorId,
+                                                  @PathVariable(value = "date") String date,
+                                                  @RequestBody NeedAuthRequest request) {
+        var data = diaryServiceImpl.findByAuthorAndDate(authorId, date);
+        return ResultCodeUtil.buildCommonResponse(DiaryWrapperResponse::new, data, ResultCodeEnum.OK);
+    }
+
 
     @Operation(summary = "获取某个具体日记的详细内容")
     @PostMapping(value = "/detail/{diarySubId}")

@@ -11,6 +11,10 @@ public class Diary {
      */
     private String diaryId;
 
+    private String authorId;
+
+    private String authorName;
+
     private String subTitle;
 
     /**
@@ -28,6 +32,8 @@ public class Diary {
     private String endPage;
 
     private String originPic;
+
+    private String comment;
 
     /**
      * 日记的内容

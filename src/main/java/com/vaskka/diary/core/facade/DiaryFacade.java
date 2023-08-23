@@ -9,11 +9,19 @@ import java.util.List;
 public interface DiaryFacade {
 
     /**
-     * 根据作者查找某篇日记
+     * 根据作者查找日记
      * @param authorId authorId 作者id
      * @return DiaryWrapper
      */
     DiaryWrapper findByAuthor(String authorId);
+
+    /**
+     * 根据作者和日期查找日记
+     * @param authorId 作者id
+     * @param dateInStr 字符串类型的日期
+     * @return DiaryWrapper
+     */
+    DiaryWrapper findByAuthorAndDate(String authorId, String dateInStr);
 
     /**
      * find by subId

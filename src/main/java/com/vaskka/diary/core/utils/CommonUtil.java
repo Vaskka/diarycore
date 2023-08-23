@@ -2,6 +2,8 @@ package com.vaskka.diary.core.utils;
 
 import org.apache.commons.codec.digest.DigestUtils;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -45,5 +47,14 @@ public class CommonUtil {
         Instant instant = Instant.ofEpochMilli(timestamp);
         ZoneId zone = ZoneId.systemDefault();
         return LocalDateTime.ofInstant(instant, zone).format(DateTimeFormatter.ofPattern(DATETIME_FORMAT_DETAIL));
+    }
+
+    public static long parseStrDate2Timestamp(String dateStr) {
+        SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT_NORMAL);
+        try {
+            return sdf.parse(dateStr).getTime();
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

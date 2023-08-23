@@ -22,7 +22,7 @@ import java.util.Optional;
 @Component("diaryContentDAO")
 public class DiaryContentDAOImpl implements DiaryContentDAO {
 
-    private static final String DIARY_CONTENT_INDEX = "diaryContentIdx";
+    private static final String DIARY_CONTENT_INDEX = "diary_content_idx";
 
     @Resource
     private ElasticsearchClient elasticsearchClient;
