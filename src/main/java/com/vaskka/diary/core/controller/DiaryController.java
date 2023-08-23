@@ -2,14 +2,19 @@ package com.vaskka.diary.core.controller;
 
 import com.vaskka.diary.core.constant.ResultCodeEnum;
 import com.vaskka.diary.core.facade.DiaryFacade;
+import com.vaskka.diary.core.model.bizobject.Diary;
 import com.vaskka.diary.core.model.bizobject.SearchCondition;
+import com.vaskka.diary.core.model.bizobject.SearchSummaryResult;
 import com.vaskka.diary.core.model.viewobject.*;
+import com.vaskka.diary.core.utils.CommonUtil;
 import com.vaskka.diary.core.utils.ResultCodeUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Tag(name = "日记接口")
 @RequestMapping(value = "/v1/api/diary")
@@ -51,9 +56,79 @@ public class DiaryController extends NeedAuthController {
         searchCondition.setSearchText(request.getSearchText());
         searchCondition.setAuthorIdPicker(SearchCondition.MultiPicker.build(request.getPickedAuthorId()));
 
-        var data = diaryServiceImpl.simpleSearch(searchCondition);
+        var rawData = diaryServiceImpl.simpleSearch(searchCondition);
+        var data = summary(rawData);
         return ResultCodeUtil.buildCommonResponse(SearchDiaryResponse::new, data, ResultCodeEnum.OK);
     }
 
+    private SearchSummaryResult summary(List<Diary> allDiaryList) {
+        var result = new SearchSummaryResult();
+
+        // 聚类作者
+        List<String> authorNameList = allDiaryList.stream()
+                .map(Diary::getAuthorName)
+                .distinct()
+                .collect(Collectors.toList());
+
+        result.setAuthorNameList(authorNameList);
+
+        // 统计聚合搜索结果
+        Map<String, SearchSummaryResult.DiarySummary> summaryMap = new HashMap<>();
+        for (var diary : allDiaryList) {
+            String year = CommonUtil.parseStrDate2Year(diary.getDiaryDateTimeStr());
+            String month = CommonUtil.parseStrDate2Month(diary.getDiaryDateTimeStr());
+
+            if (summaryMap.containsKey(year)) {
+                var summary = summaryMap.get(year);
+                var monthList = summary.getMonthList();
+                var dateInstrList = summary.getDateInStrList();
+                var diaryList = summary.getDiaryList();
+
+                if (monthList.contains(month)) {
+                    int monthIndex = monthList.indexOf(month);
+                    dateInstrList.get(monthIndex).add(diary.getDiaryDateTimeStr());
+                    diaryList.get(monthIndex).add(diary);
+                } else {
+                    monthList.add(month);
+
+                    List<Diary> newDiaryList = new ArrayList<>();
+                    newDiaryList.add(diary);
+                    diaryList.add(newDiaryList);
+                    diaryList.sort(Comparator.comparing(e -> CommonUtil.parseStrDate2MonthInt(e.get(0).getDiaryDateTimeStr())));
+
+                    List<String> newDateInStr = new ArrayList<>();
+                    newDateInStr.add(diary.getDiaryDateTimeStr());
+                    dateInstrList.add(newDateInStr);
+                    dateInstrList.sort(Comparator.comparing(e -> CommonUtil.parseStrDate2MonthInt(e.get(0))));
+                }
+            } else {
+                // init new one
+                SearchSummaryResult.DiarySummary diarySummary = new SearchSummaryResult.DiarySummary();
+                diarySummary.setYear(year);
+                diarySummary.setMonthList(new ArrayList<>());
+                diarySummary.setDiaryList(new ArrayList<>());
+                diarySummary.setDateInStrList(new ArrayList<>());
+
+                diarySummary.getMonthList().add(month);
+
+                List<Diary> firstDiaryList = new ArrayList<>();
+                firstDiaryList.add(diary);
+                diarySummary.getDiaryList().add(firstDiaryList);
+
+                List<String> firstDateInStr = new ArrayList<>();
+                firstDateInStr.add(diary.getDiaryDateTimeStr());
+                diarySummary.getDateInStrList().add(firstDateInStr);
+
+                summaryMap.put(year, diarySummary);
+            }
+
+        }
+        result.setSummaryList(summaryMap.values()
+                .stream()
+                .sorted(Comparator.comparing(e -> Integer.parseInt(e.getYear())))
+                .collect(Collectors.toList()));
+
+        return result;
+    }
 
 }

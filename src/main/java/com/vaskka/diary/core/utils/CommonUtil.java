@@ -8,6 +8,8 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.UUID;
 
 public class CommonUtil {
@@ -53,6 +55,44 @@ public class CommonUtil {
         SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT_NORMAL);
         try {
             return sdf.parse(dateStr).getTime();
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static String parseStrDate2Year(String dateStr) {
+        return String.valueOf(parseStrDate2YearInt(dateStr));
+    }
+
+    public static int parseStrDate2YearInt(String dateStr) {
+        var date = parseStr2Date(dateStr);
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+
+        return calendar.get(Calendar.YEAR);
+    }
+
+    public static String parseStrDate2Month(String dateStr) {
+        int month = parseStrDate2MonthInt(dateStr);
+        var res =  String.valueOf(month);
+        if (res.length() == 1) {
+            return "0" + res;
+        }
+        return res;
+    }
+
+    public static int parseStrDate2MonthInt(String dateStr) {
+        var date = parseStr2Date(dateStr);
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+
+        return calendar.get(Calendar.MONTH) + 1;
+    }
+
+    private static Date parseStr2Date(String dateStr) {
+        SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT_NORMAL);
+        try {
+            return sdf.parse(dateStr);
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }
