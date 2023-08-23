@@ -7,15 +7,18 @@ import com.vaskka.diary.core.model.bizobject.SearchCondition;
 import com.vaskka.diary.core.model.bizobject.SearchSummaryResult;
 import com.vaskka.diary.core.model.viewobject.*;
 import com.vaskka.diary.core.utils.CommonUtil;
+import com.vaskka.diary.core.utils.LogUtil;
 import com.vaskka.diary.core.utils.ResultCodeUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Tag(name = "日记接口")
 @RequestMapping(value = "/v1/api/diary")
 @RestController
@@ -52,12 +55,14 @@ public class DiaryController extends NeedAuthController {
     @Operation(summary = "搜索")
     @PostMapping(value = "/search")
     public SearchDiaryResponse search(@RequestBody SearchDiaryRequest request) {
+        LogUtil.infof(log, "[search],search key={},", request.getSearchText());
         var searchCondition = new SearchCondition();
         searchCondition.setSearchText(request.getSearchText());
         searchCondition.setAuthorIdPicker(SearchCondition.MultiPicker.build(request.getPickedAuthorId()));
 
         var rawData = diaryServiceImpl.simpleSearch(searchCondition);
         var data = summary(rawData);
+        LogUtil.infof(log, "[search],final result:{}", data);
         return ResultCodeUtil.buildCommonResponse(SearchDiaryResponse::new, data, ResultCodeEnum.OK);
     }
 

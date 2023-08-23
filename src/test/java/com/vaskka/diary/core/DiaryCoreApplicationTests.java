@@ -55,7 +55,7 @@ class DiaryCoreApplicationTests {
 		log.info(response_1.toString());
 
 		DiaryContent diaryContent_2 = new DiaryContent();
-		diaryContent_2.setDiaryId("2");
+		diaryContent_2.setDiaryId("3");
 		diaryContent_2.setContent("吃饭中");
 		IndexResponse response_2 = elasticsearchClient.index(i -> i
 				.index("diary_content_idx")
