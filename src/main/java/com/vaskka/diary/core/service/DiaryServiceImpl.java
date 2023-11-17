@@ -1,5 +1,6 @@
 package com.vaskka.diary.core.service;
 
+import com.google.common.collect.Lists;
 import com.vaskka.diary.core.dal.DiaryContentDAO;
 import com.vaskka.diary.core.dal.DiaryMapper;
 import com.vaskka.diary.core.exceptions.AuthorNotExistException;
@@ -14,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -53,16 +55,42 @@ public class DiaryServiceImpl implements DiaryFacade {
             throw new AuthorNotExistException();
         }
 
-        List<DiaryDO> diaryDOList = diaryMapper.findByAuthorId(Long.parseLong(author.getAuthorId()))
-                .stream()
-                .filter(diaryDO -> {
-                    long incomm = CommonUtil.parseStrDate2Timestamp(dateInStr);
-                    long indb = diaryDO.getDiaryDateTimestamp();
-                    LogUtil.infof(log, "[compare],incomming={},indb={}", incomm, indb);
-                    return Objects.equals(indb, incomm);
-                })
-                .collect(Collectors.toList());
-        return buildDiaryWrapper(diaryDOList, author);
+        if (dateInStr.split("-").length == 2) {
+            var timestampList = CommonUtil.getDateStrListFromDateStrMonth(dateInStr);
+            // 整月浏览
+            List<DiaryDO> diaryDOList = diaryMapper.findByAuthorId(Long.parseLong(author.getAuthorId()))
+                    .stream()
+                    .filter(diaryDO -> {
+                        String indb = CommonUtil.getDateStr(diaryDO.getDiaryDateTimestamp());
+                        LogUtil.infof(log, "[compare],whole month,incomming={},indb={}", timestampList, indb);
+                        return timestampList.contains(indb);
+                    })
+                    .collect(Collectors.toList());
+            return buildDiaryWrapper(diaryDOList, author);
+        } else {
+            List<DiaryDO> diaryDOList = diaryMapper.findByAuthorId(Long.parseLong(author.getAuthorId()))
+                    .stream()
+                    .filter(diaryDO -> {
+                        long incomm = CommonUtil.parseStrDate2Timestamp(dateInStr);
+                        long indb = diaryDO.getDiaryDateTimestamp();
+                        LogUtil.infof(log, "[compare],incomming={},indb={}", incomm, indb);
+                        return Objects.equals(indb, incomm);
+                    })
+                    .collect(Collectors.toList());
+            return buildDiaryWrapper(diaryDOList, author);
+        }
+    }
+
+    @Override
+    public List<String> findDiaryBetween(String authorId) {
+        List<String> res = new ArrayList<>();
+        String start = CommonUtil.getDateStr(diaryMapper.findDateFirst(Long.parseLong(authorId))).split("-")[0];
+        String end = CommonUtil.getDateStr(diaryMapper.findDateLatest(Long.parseLong(authorId))).split("-")[0];
+        for (int i = Integer.parseInt(start); i <= Integer.parseInt(end); i++) {
+            res.add(String.valueOf(i));
+        }
+
+        return res;
     }
 
     @Override

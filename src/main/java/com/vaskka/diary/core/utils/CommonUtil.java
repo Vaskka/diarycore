@@ -1,16 +1,16 @@
 package com.vaskka.diary.core.utils;
 
+import com.google.common.collect.Lists;
 import org.apache.commons.codec.digest.DigestUtils;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.UUID;
+import java.util.*;
 
 public class CommonUtil {
 
@@ -58,6 +58,46 @@ public class CommonUtil {
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public static List<String> getDateStrListFromDateStrMonth(String dateStr) {
+        if (dateStr.split("-").length != 2) {
+            return Lists.newArrayList(dateStr);
+        }
+
+        List<String> res = new ArrayList<>();
+        dateStr = dateStr + "-01";
+        LocalDate monthFirstDate = LocalDate.parse(dateStr, DateTimeFormatter.ofPattern(DATE_FORMAT_NORMAL));
+        LocalDate nextMonthFirstDate = monthFirstDate.plusMonths(1);
+        for (LocalDate curr = monthFirstDate; curr.isBefore(nextMonthFirstDate); curr = curr.plusDays(1)) {
+            res.add(curr.format(DateTimeFormatter.ofPattern(DATE_FORMAT_NORMAL)));
+        }
+
+        return res;
+    }
+
+
+    public static List<Long> getTimestampListFromDateStrMonth(String dateStr) {
+        if (dateStr.split("-").length != 2) {
+            return Lists.newArrayList(parseStrDate2Timestamp(dateStr));
+        }
+
+        List<Long> res = new ArrayList<>();
+        dateStr = dateStr + "-01";
+        LocalDate monthFirstDate = LocalDate.parse(dateStr, DateTimeFormatter.ofPattern(DATE_FORMAT_NORMAL));
+        LocalDate nextMonthFirstDate = monthFirstDate.plusMonths(1);
+        for (LocalDate curr = monthFirstDate; curr.isBefore(nextMonthFirstDate); curr = curr.plusDays(1)) {
+            res.add(parseLocalDate2Timestamp(curr));
+        }
+
+        return res;
+    }
+
+    public static long parseLocalDate2Timestamp(LocalDate localDate) {
+        ZoneId zone = ZoneId.systemDefault();
+        Instant instant = localDate.atStartOfDay().atZone(zone).toInstant();
+        Date date = Date.from(instant);
+        return date.getTime();
     }
 
     public static String parseStrDate2Year(String dateStr) {

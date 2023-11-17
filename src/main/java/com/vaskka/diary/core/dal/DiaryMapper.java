@@ -17,10 +17,25 @@ public interface DiaryMapper {
     Integer insertDiary(DiaryDO diaryDO);
 
     @Select(value = "SELECT id, gmt_create, gmt_modified, author_id, diary_title, sub_title, diary_date_timestamp, start_page, end_page, origin_pic, comment, extern_param " +
-            "FROM diary di where di.id=#{id}")
+            "FROM diary di " +
+            "WHERE di.id=#{id}")
     DiaryDO findById(@Param("id") Long id);
 
     @Select(value = "SELECT id, gmt_create, gmt_modified, author_id, diary_title, sub_title, diary_date_timestamp, start_page, end_page, origin_pic, comment, extern_param " +
-            "FROM diary di where di.author_id=#{authorId}")
+            "FROM diary di " +
+            "WHERE di.author_id=#{authorId} " +
+            "ORDER BY diary_date_timestamp")
     List<DiaryDO> findByAuthorId(@Param("authorId") Long authorId);
+
+    @Select(value = "SELECT diary_date_timestamp " +
+            "FROM diary di " +
+            "WHERE di.author_id=#{authorId} " +
+            "ORDER BY diary_date_timestamp LIMIT 1")
+    Long findDateFirst(@Param("authorId") Long authorId);
+
+    @Select(value = "SELECT diary_date_timestamp " +
+            "FROM diary di " +
+            "WHERE di.author_id=#{authorId} " +
+            "ORDER BY diary_date_timestamp DESC LIMIT 1")
+    Long findDateLatest(@Param("authorId") Long authorId);
 }

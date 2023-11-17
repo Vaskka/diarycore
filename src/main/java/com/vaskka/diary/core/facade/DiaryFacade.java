@@ -24,6 +24,13 @@ public interface DiaryFacade {
     DiaryWrapper findByAuthorAndDate(String authorId, String dateInStr);
 
     /**
+     * 查找作者的日记between
+     * @param authorId authorId
+     * @return list
+     */
+    List<String> findDiaryBetween(String authorId);
+
+    /**
      * find by subId
      * @param diarySubId diarySubId
      * @return Diary 某篇具体的日记
