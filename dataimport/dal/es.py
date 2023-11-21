@@ -23,6 +23,9 @@ def insert_es(id, diary_id, author_id, content):
         'content': content,
     })
 
+def exists(id):
+    return es.exists(index=ES_INDEX, id=id)
+
 
 def search_es(search_content):
 
