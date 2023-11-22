@@ -116,6 +116,7 @@ public class DiaryServiceImpl implements DiaryFacade {
         var searchResult = diaryContentDAO.simpleSearch(searchCondition.getSearchText());
         return searchResult.stream()
                 .filter(o -> searchCondition.getAuthorIdPicker().contains(o.getAuthorId()))
+                .filter(o -> diaryMapper.findById(Long.parseLong(o.getDiaryId())) != null)
                 .map(this::buildFromDiaryContent)
                 .collect(Collectors.toList());
     }
