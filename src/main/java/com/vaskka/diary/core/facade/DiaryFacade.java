@@ -16,6 +16,15 @@ public interface DiaryFacade {
     DiaryWrapper findByAuthor(String authorId);
 
     /**
+     * 根据作者查找日记
+     * @param authorId authorId 作者id
+     * @param page page
+     * @param size size
+     * @return DiaryWrapper
+     */
+    DiaryWrapper findByAuthorPageable(String authorId, Integer page, Integer size);
+
+    /**
      * 根据作者和日期查找日记
      * @param authorId 作者id
      * @param dateInStr 字符串类型的日期

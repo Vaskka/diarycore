@@ -47,6 +47,19 @@ public class DiaryServiceImpl implements DiaryFacade {
     }
 
     @Override
+    public DiaryWrapper findByAuthorPageable(String authorId, Integer page, Integer size) {
+        LogUtil.infof(log, "[daily],find by pageable {}", authorId);
+        var author = authorServiceImpl.findById(authorId);
+        if (author == null) {
+            LogUtil.errorf(log, "[daily],auth not exist,authId:{}", authorId);
+            throw new AuthorNotExistException();
+        }
+
+        List<DiaryDO> diaryDOList = diaryMapper.findByAuthorIdPageable(Long.parseLong(author.getAuthorId()), size * page, size);
+        return buildDiaryWrapper(diaryDOList, author);
+    }
+
+    @Override
     public DiaryWrapper findByAuthorAndDate(String authorId, String dateInStr) {
         LogUtil.infof(log, "[daily],find by {} and {}", authorId, dateInStr);
         var author = authorServiceImpl.findById(authorId);

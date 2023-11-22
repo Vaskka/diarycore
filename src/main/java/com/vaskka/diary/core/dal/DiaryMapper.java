@@ -27,6 +27,13 @@ public interface DiaryMapper {
             "ORDER BY diary_date_timestamp")
     List<DiaryDO> findByAuthorId(@Param("authorId") Long authorId);
 
+    @Select(value = "SELECT id, gmt_create, gmt_modified, author_id, diary_title, sub_title, diary_date_timestamp, start_page, end_page, origin_pic, comment, extern_param " +
+            "FROM diary di " +
+            "WHERE di.author_id=#{authorId} " +
+            "ORDER BY diary_date_timestamp LIMIT #{size} OFFSET #{offset} ")
+    List<DiaryDO> findByAuthorIdPageable(@Param("authorId") Long authorId, @Param("offset") Integer offset, @Param("size") Integer size);
+
+
     @Select(value = "SELECT diary_date_timestamp " +
             "FROM diary di " +
             "WHERE di.author_id=#{authorId} " +

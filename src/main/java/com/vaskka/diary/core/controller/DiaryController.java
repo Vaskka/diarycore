@@ -35,6 +35,16 @@ public class DiaryController extends NeedAuthController {
         return ResultCodeUtil.buildCommonResponse(DiaryWrapperResponse::new, data, ResultCodeEnum.OK);
     }
 
+    @Operation(summary = "根据作者获取作者全部的日记，分页")
+    @PostMapping(value = "/find/author/pageable/{authorId}/{page}/{size}")
+    public DiaryWrapperResponse findByAuthPageable(@PathVariable(value = "authorId") String authorId,
+                                                   @PathVariable(value = "page") Integer page,
+                                                   @PathVariable(value = "size") Integer size,
+                                                   @RequestBody NeedAuthRequest request) {
+        var data = diaryServiceImpl.findByAuthorPageable(authorId, page, size);
+        return ResultCodeUtil.buildCommonResponse(DiaryWrapperResponse::new, data, ResultCodeEnum.OK);
+    }
+
     @Operation(summary = "根据作者获取作者全部的日记")
     @PostMapping(value = "/find/author/{authorId}/{date}")
     public DiaryWrapperResponse findByAuthAndDate(@PathVariable(value = "authorId") String authorId,
