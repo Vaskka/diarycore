@@ -15,6 +15,8 @@ public class Diary {
 
     private String authorName;
 
+    private String title;
+
     private String subTitle;
 
     /**
@@ -34,6 +36,16 @@ public class Diary {
     private String originPic;
 
     private String comment;
+
+    /**
+     * 上一天的日期
+     */
+    private String preDateStr;
+
+    /**
+     * 下一天的日期
+     */
+    private String nextDateStr;
 
     /**
      * 日记的内容

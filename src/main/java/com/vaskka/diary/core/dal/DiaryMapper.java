@@ -38,4 +38,16 @@ public interface DiaryMapper {
             "WHERE di.author_id=#{authorId} " +
             "ORDER BY diary_date_timestamp DESC LIMIT 1")
     Long findDateLatest(@Param("authorId") Long authorId);
+
+    @Select(value = "SELECT diary_date_timestamp " +
+            "FROM diary di " +
+            "WHERE di.diary_date_timestamp < #{timestamp} " +
+            "ORDER BY diary_date_timestamp DESC LIMIT 1")
+    Long findPreTimestamp(@Param("timestamp") Long timestamp);
+
+    @Select(value = "SELECT diary_date_timestamp " +
+            "FROM diary di " +
+            "WHERE di.diary_date_timestamp > #{timestamp} " +
+            "ORDER BY diary_date_timestamp LIMIT 1")
+    Long findNextTimestamp(@Param("timestamp") Long timestamp);
 }

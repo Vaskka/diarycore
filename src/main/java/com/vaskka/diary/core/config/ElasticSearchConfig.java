@@ -34,6 +34,9 @@ public class ElasticSearchConfig {
     @Value("${es.fingerprint}")
     private String fingerprint;
 
+    @Value("${es.https}")
+    private Boolean isHttps;
+
     @Bean(name = "elasticsearchClient")
     public ElasticsearchClient elasticsearchClient() {
 
@@ -47,7 +50,7 @@ public class ElasticSearchConfig {
 
         // Create the low-level client
         RestClient restClient = RestClient
-                .builder(new HttpHost(host, port, "https"))
+                .builder(new HttpHost(host, port, isHttps ? "https" : "http"))
                 .setHttpClientConfigCallback(hc -> hc
                         .setSSLContext(sslContext)
                         .setDefaultCredentialsProvider(credsProv)

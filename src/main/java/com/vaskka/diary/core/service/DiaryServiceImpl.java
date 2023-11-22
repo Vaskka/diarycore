@@ -122,16 +122,37 @@ public class DiaryServiceImpl implements DiaryFacade {
         diary.setAuthorId(String.valueOf(diaryDO.getAuthorId()));
         diary.setAuthorName(authorServiceImpl.findById(String.valueOf(diaryDO.getAuthorId())).getAuthorName());
         diary.setDiaryId(String.valueOf(diaryDO.getId()));
+        diary.setTitle(diaryDO.getDiaryTitle());
         diary.setSubTitle(diaryDO.getSubTitle());
         diary.setDiaryDateTimestamp(diaryDO.getDiaryDateTimestamp());
         diary.setDiaryDateTimeStr(CommonUtil.getDateStr(diary.getDiaryDateTimestamp()));
         diary.setStartPage(diaryDO.getStartPage());
         diary.setEndPage(diaryDO.getEndPage());
         diary.setOriginPic(diaryDO.getOriginPic());
+        diary.setPreDateStr(findPreDateStr(diaryDO));
+        diary.setNextDateStr(findNextDateStr(diaryDO));
         diary.setDiaryContent(diaryContentDAO.findById(String.valueOf(diaryDO.getId())).orElseThrow(EsException::new));
         diary.setExternParam(diaryDO.getExternParam());
         return diary;
     }
+
+    private String findPreDateStr(DiaryDO diaryDO) {
+        var pre = diaryMapper.findPreTimestamp(diaryDO.getDiaryDateTimestamp());
+        if (pre == null) {
+            return null;
+        }
+
+        return CommonUtil.getDateStr(pre);
+    }
+
+    private String findNextDateStr(DiaryDO diaryDO) {
+        var next = diaryMapper.findNextTimestamp(diaryDO.getDiaryDateTimestamp());
+        if (next == null) {
+            return null;
+        }
+        return CommonUtil.getDateStr(next);
+    }
+
 
     private Diary buildFromDiaryContent(DiaryContent diaryContent) {
         return buildDiary(diaryMapper.findById(Long.parseLong(diaryContent.getDiaryId())));
