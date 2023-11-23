@@ -52,6 +52,14 @@ def select_by_author_id_title_sub_title(author_id, title, sub_title):
         return cursor.fetchone()
 
 
+def select_by_author_id_title_timestamp(author_id, title, timestamp):
+    with db_conn.cursor() as cursor:
+        # Create a new record
+        sql = "SELECT * FROM `diary` WHERE `author_id` = %s AND `diary_title` = %s AND `diary_date_timestamp` = %s"
+        cursor.execute(sql, (author_id, title, timestamp))
+        return cursor.fetchone()
+
+
 def select_by_author_name(author_name):
      with db_conn.cursor() as cursor:
         # Create a new record

@@ -8,6 +8,9 @@ from dal import es, mysql
 from utils.util import *
 
 
+maybe_error = []
+
+
 def excel_rd(path):
     wb = load_workbook(filename = path)
     ws = wb.active
@@ -90,6 +93,17 @@ def insert_data(author_id, raw_item):
         'ext': ext,
     }
     comment = '' if raw_item['comment'] is None else raw_item['comment']
+    # detect error timestamp
+    diary_record = mysql.select_by_author_id_title_timestamp(author_id=author_id, title=raw_item['diaty_title'], timestamp=timestamp)
+    if diary_record is not None:
+        maybe_error.append({
+            'authorId': author_id,
+            'title': raw_item['diaty_title'],
+            'sub_title': raw_item['sub_title'],
+        })
+        return
+        pass
+
     diary_record = mysql.select_by_author_id_title_sub_title(author_id=author_id, title=raw_item['diaty_title'], sub_title=raw_item['sub_title'])
     if diary_record is None:
         mysql.insert_mysql_diary(author_id=author_id, 
@@ -127,7 +141,7 @@ def process(file_name):
 
 
 def main():
-    d = './debug'
+    d = './excel'
     for filepath,dirnames,filenames in os.walk(d):
         for filename in filenames:
             path = d + os.sep + filename
@@ -136,6 +150,8 @@ def main():
                 process(path)
             else:
                 print('not excel, skip:', path)
+    
+    print('all maybe error:', maybe_error)
     pass    
 
 
