@@ -40,6 +40,13 @@ public interface DiaryFacade {
     List<String> findDiaryBetween(String authorId);
 
     /**
+     * 查找datetime
+     * @param authorId authorId
+     * @return string list
+     */
+    List<String> findDateTimeByAuthor(String authorId);
+
+    /**
      * find by subId
      * @param diarySubId diarySubId
      * @return Diary 某篇具体的日记

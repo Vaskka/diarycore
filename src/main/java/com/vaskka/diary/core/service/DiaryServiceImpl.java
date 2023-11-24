@@ -107,6 +107,14 @@ public class DiaryServiceImpl implements DiaryFacade {
     }
 
     @Override
+    public List<String> findDateTimeByAuthor(String authorId) {
+        return diaryMapper.findByAuthorId(Long.valueOf(authorId))
+                .stream()
+                .map(DO -> CommonUtil.getDateStr(DO.getDiaryDateTimestamp()))
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public Diary findSubDiaryById(String diarySubId) {
         return buildDiary(diaryMapper.findById(Long.parseLong(diarySubId)));
     }
