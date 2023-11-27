@@ -77,7 +77,7 @@ public class DiaryController extends NeedAuthController {
         return ResultCodeUtil.buildCommonResponse(SingleDiaryResponse::new, data, ResultCodeEnum.OK);
     }
 
-    @Operation(summary = "搜索")
+    @Operation(summary = "搜索(旧)")
     @PostMapping(value = "/search")
     public SearchDiaryResponse search(@RequestBody SearchDiaryRequest request) {
         LogUtil.infof(log, "[search],search key={},", request.getSearchText());
@@ -91,6 +91,21 @@ public class DiaryController extends NeedAuthController {
         return ResultCodeUtil.buildCommonResponse(SearchDiaryResponse::new, data, ResultCodeEnum.OK);
     }
 
+    @Operation(summary = "搜索(分页)")
+    @PostMapping(value = "/pageable/search/{size}/{page}")
+    public SearchDiaryPageableResponse search(@PathVariable("size") Integer size, @PathVariable("page") Integer page,
+                                              @RequestBody SearchDiaryRequest request) {
+        LogUtil.infof(log, "[searchPageable],search key={},", request.getSearchText());
+        var searchCondition = new SearchCondition();
+        searchCondition.setSearchText(request.getSearchText());
+        searchCondition.setAuthorIdPicker(SearchCondition.MultiPicker.build(request.getPickedAuthorId()));
+
+        var rawData = diaryServiceImpl.searchPageable(searchCondition);
+        LogUtil.infof(log, "[searchPageable],final result:{}", rawData);
+        return ResultCodeUtil.buildCommonResponse(SearchDiaryPageableResponse::new, rawData, ResultCodeEnum.OK);
+    }
+
+
     private SearchSummaryResult summary(List<Diary> allDiaryList) {
         var result = new SearchSummaryResult();
 
@@ -101,6 +116,16 @@ public class DiaryController extends NeedAuthController {
                 .collect(Collectors.toList());
 
         result.setAuthorNameList(authorNameList);
+
+        Map<String, Integer> authorMap = new HashMap<>();
+        for (var diary : allDiaryList) {
+            if (authorMap.containsKey(diary.getAuthorName())) {
+                authorMap.put(diary.getAuthorName(), authorMap.get(diary.getAuthorName()) + 1);
+            } else {
+                authorMap.put(diary.getAuthorName(), 1);
+            }
+        }
+        result.setAuthorCountMap(authorMap);
 
         // 统计聚合搜索结果
         Map<String, SearchSummaryResult.DiarySummary> summaryMap = new HashMap<>();

@@ -3,6 +3,7 @@ package com.vaskka.diary.core.facade;
 import com.vaskka.diary.core.model.bizobject.Diary;
 import com.vaskka.diary.core.model.bizobject.DiaryWrapper;
 import com.vaskka.diary.core.model.bizobject.SearchCondition;
+import com.vaskka.diary.core.model.bizobject.SearchResultPageable;
 
 import java.util.List;
 
@@ -60,5 +61,12 @@ public interface DiaryFacade {
      */
     List<Diary> simpleSearch(SearchCondition searchCondition);
 
+    /**
+     * 分页搜索
+     *
+     * @param searchCondition condition
+     * @return return
+     */
+    SearchResultPageable searchPageable(SearchCondition searchCondition);
 
 }

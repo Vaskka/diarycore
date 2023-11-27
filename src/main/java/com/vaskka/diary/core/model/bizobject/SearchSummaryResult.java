@@ -3,6 +3,7 @@ package com.vaskka.diary.core.model.bizobject;
 import lombok.Data;
 
 import java.util.List;
+import java.util.Map;
 
 @Data
 public class SearchSummaryResult {
@@ -20,6 +21,8 @@ public class SearchSummaryResult {
     }
 
     private List<String> authorNameList;
+
+    private Map<String, Integer> authorCountMap;
 
     private List<DiarySummary> summaryList;
 

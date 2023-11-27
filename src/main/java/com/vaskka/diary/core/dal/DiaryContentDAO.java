@@ -1,6 +1,7 @@
 package com.vaskka.diary.core.dal;
 
 import com.vaskka.diary.core.model.bizobject.DiaryContent;
+import com.vaskka.diary.core.model.bizobject.EsSearchResult;
 
 import java.util.List;
 import java.util.Optional;
@@ -28,4 +29,13 @@ public interface DiaryContentDAO {
      */
     List<DiaryContent> simpleSearch(String searchText);
 
+    /**
+     * search pageable
+     *
+     * @param searchText text
+     * @param size       size
+     * @param page       page
+     * @return list
+     */
+    EsSearchResult searchPageable(String searchText, Integer size, Integer page);
 }

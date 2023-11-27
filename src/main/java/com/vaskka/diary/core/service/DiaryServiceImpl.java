@@ -1,6 +1,5 @@
 package com.vaskka.diary.core.service;
 
-import com.google.common.collect.Lists;
 import com.vaskka.diary.core.dal.DiaryContentDAO;
 import com.vaskka.diary.core.dal.DiaryMapper;
 import com.vaskka.diary.core.exceptions.AuthorNotExistException;
@@ -15,9 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -86,7 +83,6 @@ public class DiaryServiceImpl implements DiaryFacade {
                     .filter(diaryDO -> {
                         long incomm = CommonUtil.parseStrDate2Timestamp(dateInStr);
                         long indb = diaryDO.getDiaryDateTimestamp();
-                        LogUtil.infof(log, "[compare],incomming={},indb={}", incomm, indb);
                         return Objects.equals(indb, incomm);
                     })
                     .collect(Collectors.toList());
@@ -127,6 +123,31 @@ public class DiaryServiceImpl implements DiaryFacade {
                 .filter(o -> diaryMapper.findById(Long.parseLong(o.getDiaryId())) != null)
                 .map(this::buildFromDiaryContent)
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * FIXME: 增加es支持更多索引：作者名、日记时间
+     *
+     * @param searchCondition condition
+     * @return list of diary
+     */
+    @Override
+    public SearchResultPageable searchPageable(SearchCondition searchCondition) {
+        var searchResult = diaryContentDAO.searchPageable(searchCondition.getSearchText(), searchCondition.getSize(), searchCondition.getPage());
+        var innerData = searchResult.getData();
+
+        SearchResultPageable result = new SearchResultPageable();
+        var innerList = innerData.stream()
+                .filter(o -> searchCondition.getAuthorIdPicker().contains(o.getAuthorId()))
+                .filter(o -> diaryMapper.findById(Long.parseLong(o.getDiaryId())) != null)
+                .map(this::buildFromDiaryContent)
+                .collect(Collectors.toList());
+        result.setResultList(innerList);
+        result.setTotalPage(searchResult.getTotalPage());
+        result.setTotalRecordCount(searchResult.getTotalRecordCount());
+        result.setSizeOfPage(searchCondition.getSize());
+        result.setSearchResultSummary(SearchResultSummary.buildSummary(innerList));
+        return result;
     }
 
     private DiaryWrapper buildDiaryWrapper(List<DiaryDO> diaryDOList, Author author) {

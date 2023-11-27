@@ -53,4 +53,8 @@ public class SearchCondition {
 
 
     private MultiPicker<String> authorIdPicker;
+
+    private Integer page;
+
+    private Integer size;
 }
