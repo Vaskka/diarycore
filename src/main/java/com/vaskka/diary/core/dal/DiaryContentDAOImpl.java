@@ -112,7 +112,7 @@ public class DiaryContentDAOImpl implements DiaryContentDAO {
             SearchRequest searchRequest = new SearchRequest.Builder()
                     .index(DIARY_CONTENT_INDEX)
                     .query(q -> q
-                            .match(t -> t
+                            .matchPhrase(t -> t
                                     .field("content")
                                     .query(searchText)
                             ))

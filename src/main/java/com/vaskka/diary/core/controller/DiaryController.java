@@ -98,6 +98,8 @@ public class DiaryController extends NeedAuthController {
         LogUtil.infof(log, "[searchPageable],search key={},", request.getSearchText());
         var searchCondition = new SearchCondition();
         searchCondition.setSearchText(request.getSearchText());
+        searchCondition.setPage(page);
+        searchCondition.setSize(size);
         searchCondition.setAuthorIdPicker(SearchCondition.MultiPicker.build(request.getPickedAuthorId()));
 
         var rawData = diaryServiceImpl.searchPageable(searchCondition);
