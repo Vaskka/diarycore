@@ -19,9 +19,11 @@ public class SearchResultSummary {
      */
     private Map<String, Integer> authorCountMap;
 
+    private List<EsSearchResult.DateWithCountResult> aggDateWithCount;
+
     private SearchResultSummary() { }
 
-    public static SearchResultSummary buildSummary(List<Diary> resultDiary) {
+    public static SearchResultSummary buildSummary(List<Diary> resultDiary, List<EsSearchResult.DateWithCountResult> aggDateWithCount) {
         SearchResultSummary summary = new SearchResultSummary();
         Map<String, String> authorMap = new HashMap<>();
         Map<String, Integer> authorCountMap = new HashMap<>();
@@ -36,6 +38,7 @@ public class SearchResultSummary {
 
         summary.setAuthorMap(authorMap);
         summary.setAuthorCountMap(authorCountMap);
+        summary.setAggDateWithCount(aggDateWithCount);
         return summary;
     }
 

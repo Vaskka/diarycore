@@ -2,6 +2,8 @@ package com.vaskka.diary.core.dal;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch._types.Result;
+import co.elastic.clients.elasticsearch._types.aggregations.CalendarInterval;
+import co.elastic.clients.elasticsearch._types.aggregations.DateHistogramBucket;
 import co.elastic.clients.elasticsearch.core.GetResponse;
 import co.elastic.clients.elasticsearch.core.IndexResponse;
 import co.elastic.clients.elasticsearch.core.SearchRequest;
@@ -111,11 +113,14 @@ public class DiaryContentDAOImpl implements DiaryContentDAO {
         try {
             SearchRequest searchRequest = new SearchRequest.Builder()
                     .index(DIARY_CONTENT_INDEX)
-                    .query(q -> q
-                            .matchPhrase(t -> t
-                                    .field("content")
-                                    .query(searchText)
-                            ))
+                    .query(q -> q.
+                            matchPhrase(t -> t
+                                .field("content")
+                                .query(searchText)))
+                    .aggregations("countPerYear", a -> a
+                            .dateHistogram(d -> d
+                                .field("timestamp")
+                                .calendarInterval(CalendarInterval.Year)))
                     .from(size * page)
                     .size(size)
                     .build();
@@ -164,6 +169,19 @@ public class DiaryContentDAOImpl implements DiaryContentDAO {
 
         res.setTotalPage(totalPages);
         res.setTotalRecordCount(totalHits);
+
+        // 统计聚合结果
+        List<DateHistogramBucket> buckets = response.aggregations()
+                .get("countPerYear")
+                .dateHistogram()
+                .buckets().array();
+        List<EsSearchResult.DateWithCountResult> aggDateWithCount = new ArrayList<>();
+        for (DateHistogramBucket bucket: buckets) {
+            EsSearchResult.DateWithCountResult dateWithCountResult = new EsSearchResult.DateWithCountResult();
+            dateWithCountResult.setCount(bucket.docCount());
+            dateWithCountResult.setDate(bucket.keyAsString());
+        }
+        res.setAggDateWithCount(aggDateWithCount);
         return res;
     }
 }

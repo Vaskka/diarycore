@@ -14,12 +14,13 @@ ES_INDEX = 'diary_content_idx'
 MOCK_ES = True
 
 
-def insert_es(id, diary_id, author_id, content):
+def insert_es(id, diary_id, author_id, timestamp, content):
     if MOCK_ES:
         return
     return es.index(id=id, index=ES_INDEX, body={
         'diaryId': diary_id,
         'authorId': author_id,
+        'timestamp': timestamp,
         'content': content,
     })
 

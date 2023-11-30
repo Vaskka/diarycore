@@ -120,9 +120,11 @@ def insert_data(author_id, raw_item):
     diary_id = diary_record['id']
 
     if not es.exists(diary_id):
-        es.insert_es(id=diary_id, diary_id=diary_id, author_id=author_id, content=raw_item['content'])
+        es.insert_es(id=diary_id, diary_id=diary_id, author_id=author_id, timestamp=timestamp, content=raw_item['content'])
     else:
         print('es record exist:', diary_id)
+        es.del_es(id=diary_id)
+        es.insert_es(id=diary_id, diary_id=diary_id, author_id=author_id, timestamp=timestamp, content=raw_item['content'])
     print('process done,{},{}', author_id, raw_item)
     pass
 
