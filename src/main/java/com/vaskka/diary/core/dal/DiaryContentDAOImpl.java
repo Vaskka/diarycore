@@ -26,7 +26,7 @@ import java.util.Optional;
 @Component("diaryContentDAO")
 public class DiaryContentDAOImpl implements DiaryContentDAO {
 
-    private static final String DIARY_CONTENT_INDEX = "diary_content_idx";
+    private static final String DIARY_CONTENT_INDEX = "prod_diary_idx";
 
     @Resource
     private ElasticsearchClient elasticsearchClient;
@@ -120,7 +120,7 @@ public class DiaryContentDAOImpl implements DiaryContentDAO {
                     .aggregations("countPerYear", a -> a
                             .dateHistogram(d -> d
                                 .field("timestamp")
-                                .calendarInterval(CalendarInterval.Year)))
+                                .calendarInterval(CalendarInterval.Year).format("yyyy")))
                     .from(size * page)
                     .size(size)
                     .build();
@@ -165,7 +165,7 @@ public class DiaryContentDAOImpl implements DiaryContentDAO {
         long totalHits = response.hits().total().value();
 
         // 计算总页数
-        int totalPages = (int) Math.ceil((double) totalHits / res.getSizeOfPage());
+        int totalPages = (int) Math.ceil((double) totalHits / hits.size());
 
         res.setTotalPage(totalPages);
         res.setTotalRecordCount(totalHits);
@@ -180,6 +180,7 @@ public class DiaryContentDAOImpl implements DiaryContentDAO {
             EsSearchResult.DateWithCountResult dateWithCountResult = new EsSearchResult.DateWithCountResult();
             dateWithCountResult.setCount(bucket.docCount());
             dateWithCountResult.setDate(bucket.keyAsString());
+            aggDateWithCount.add(dateWithCountResult);
         }
         res.setAggDateWithCount(aggDateWithCount);
         return res;

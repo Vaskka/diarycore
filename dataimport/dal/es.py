@@ -8,7 +8,7 @@ es = Elasticsearch(
             verify_certs = False
         )
 
-ES_INDEX = 'diary_content_idx'
+ES_INDEX = 'prod_diary_idx'
 
 
 MOCK_ES = True
@@ -60,3 +60,24 @@ def all():
 def setEsMock(mock):
     global MOCK_ES
     MOCK_ES = mock
+
+#
+# if __name__ == '__main__':
+#     new_mapping = {
+#         "mappings": {
+#             "properties": {
+#                 "timestamp": {"type": "date"}
+#             }
+#         }
+#     }
+#     new_index_name = "prod_diary_idx"
+#     es.indices.create(index=new_index_name, body=new_mapping)
+#
+#     # 使用reindex API复制数据到新索引
+#     reindex_body = {
+#         "source": {"index": ES_INDEX},
+#         "dest": {"index": new_index_name}
+#     }
+#     es.reindex(body=reindex_body, wait_for_completion=True)
+#
+#     pass

@@ -15,4 +15,6 @@ public class DiaryContent {
 
     private String content;
 
+    private long timestamp;
+
 }
