@@ -69,4 +69,6 @@ public interface DiaryFacade {
      */
     SearchResultPageable searchPageable(SearchCondition searchCondition);
 
+    SearchResultPageable searchV3(SearchCondition searchCondition);
+
 }

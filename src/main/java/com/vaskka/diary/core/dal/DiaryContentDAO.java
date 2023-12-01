@@ -2,6 +2,7 @@ package com.vaskka.diary.core.dal;
 
 import com.vaskka.diary.core.model.bizobject.DiaryContent;
 import com.vaskka.diary.core.model.bizobject.EsSearchResult;
+import com.vaskka.diary.core.model.bizobject.SearchCondition;
 
 import java.util.List;
 import java.util.Optional;
@@ -38,4 +39,11 @@ public interface DiaryContentDAO {
      * @return list
      */
     EsSearchResult searchPageable(String searchText, Integer size, Integer page);
+
+    /**
+     * 复杂限定条件搜索
+     * @param searchCondition condition
+     * @return result
+     */
+    EsSearchResult searchV3(SearchCondition searchCondition);
 }

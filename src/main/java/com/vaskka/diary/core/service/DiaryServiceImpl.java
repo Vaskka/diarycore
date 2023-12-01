@@ -150,6 +150,23 @@ public class DiaryServiceImpl implements DiaryFacade {
         return result;
     }
 
+    @Override
+    public SearchResultPageable searchV3(SearchCondition searchCondition) {
+        var searchResult = diaryContentDAO.searchV3(searchCondition);
+        var innerData = searchResult.getData();
+        SearchResultPageable result = new SearchResultPageable();
+        var innerList = innerData.stream()
+                .filter(o -> diaryMapper.findById(Long.parseLong(o.getDiaryId())) != null)
+                .map(this::buildFromDiaryContent)
+                .collect(Collectors.toList());
+        result.setResultList(innerList);
+        result.setTotalPage(searchResult.getTotalPage());
+        result.setTotalRecordCount(searchResult.getTotalRecordCount());
+        result.setSizeOfPage(searchCondition.getSize());
+        result.setSearchResultSummary(SearchResultSummary.buildSummary(innerList, searchResult.getAggDateWithCount()));
+        return result;
+    }
+
     private DiaryWrapper buildDiaryWrapper(List<DiaryDO> diaryDOList, Author author) {
         DiaryWrapper diaryWrapper = new DiaryWrapper();
         diaryWrapper.setDiaryTitle(author.getAuthorName() + "日记");

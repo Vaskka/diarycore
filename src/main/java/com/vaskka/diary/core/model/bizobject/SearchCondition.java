@@ -1,6 +1,7 @@
 package com.vaskka.diary.core.model.bizobject;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
@@ -49,10 +50,36 @@ public class SearchCondition {
         }
     }
 
+    /**
+     * 范围选择器
+     * @param <T> 类型
+     */
+    @Data
+    @NoArgsConstructor
+    public static class RangePicker<T> {
+        private T gte;
+
+        private T lte;
+
+        public static <T> RangePicker<T> getInstance(T gte, T lte) {
+            var instance = new RangePicker<T>();
+            instance.setGte(gte);
+            instance.setLte(lte);
+            return instance;
+        }
+    }
+
+
     private String searchText;
 
+    /**
+     * 多关键字搜索
+     */
+    private List<String> multiSearchText;
 
     private MultiPicker<String> authorIdPicker;
+
+    private RangePicker<Long> timestampRange;
 
     private Integer page;
 

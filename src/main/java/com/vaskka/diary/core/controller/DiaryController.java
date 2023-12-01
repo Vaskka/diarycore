@@ -107,6 +107,26 @@ public class DiaryController extends NeedAuthController {
         return ResultCodeUtil.buildCommonResponse(SearchDiaryPageableResponse::new, rawData, ResultCodeEnum.OK);
     }
 
+    @Operation(summary = "搜索(分页)")
+    @PostMapping(value = "/pageable/search/multi/{size}/{page}")
+    public SearchDiaryPageableResponse searchV3(@PathVariable("size") Integer size, @PathVariable("page") Integer page,
+                                              @RequestBody SearchDiaryRequest request) {
+        LogUtil.infof(log, "[searchV3],search key={},", request.getSearchText());
+        var searchCondition = new SearchCondition();
+        searchCondition.setPage(page);
+        searchCondition.setSize(size);
+        searchCondition.setAuthorIdPicker(SearchCondition.MultiPicker.build(request.getPickedAuthorId()));
+        searchCondition.setMultiSearchText(request.getMultiSearchText());
+        if (request.getDateRange() != null) {
+            long gte = CommonUtil.parseStrDate2Timestamp(request.getDateRange().getGe());
+            long lte = CommonUtil.parseStrDate2Timestamp(request.getDateRange().getLe());
+            searchCondition.setTimestampRange(SearchCondition.RangePicker.getInstance(gte, lte));
+        }
+
+        var rawData = diaryServiceImpl.searchV3(searchCondition);
+        LogUtil.infof(log, "[searchV3],final result:{}", rawData);
+        return ResultCodeUtil.buildCommonResponse(SearchDiaryPageableResponse::new, rawData, ResultCodeEnum.OK);
+    }
 
     private SearchSummaryResult summary(List<Diary> allDiaryList) {
         var result = new SearchSummaryResult();

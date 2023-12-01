@@ -4,15 +4,20 @@ import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch._types.Result;
 import co.elastic.clients.elasticsearch._types.aggregations.CalendarInterval;
 import co.elastic.clients.elasticsearch._types.aggregations.DateHistogramBucket;
+import co.elastic.clients.elasticsearch._types.query_dsl.MatchQuery;
+import co.elastic.clients.elasticsearch._types.query_dsl.Query;
+import co.elastic.clients.elasticsearch._types.query_dsl.RangeQuery;
 import co.elastic.clients.elasticsearch.core.GetResponse;
 import co.elastic.clients.elasticsearch.core.IndexResponse;
 import co.elastic.clients.elasticsearch.core.SearchRequest;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
 import co.elastic.clients.elasticsearch.core.search.Hit;
+import co.elastic.clients.json.JsonData;
 import com.google.common.collect.Lists;
 import com.vaskka.diary.core.exceptions.EsException;
 import com.vaskka.diary.core.model.bizobject.DiaryContent;
 import com.vaskka.diary.core.model.bizobject.EsSearchResult;
+import com.vaskka.diary.core.model.bizobject.SearchCondition;
 import com.vaskka.diary.core.utils.LogUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -128,6 +133,88 @@ public class DiaryContentDAOImpl implements DiaryContentDAO {
 
             if (response == null || response.hits() == null || response.hits().hits() == null) {
                 LogUtil.errorf(log, "[es],search pageable,error,response is null,searchText={}", searchText);
+                return res;
+            }
+
+            return processEsResult(res, response);
+        } catch (Exception e) {
+            LogUtil.errorf(log, "[es],search pageable,error,", e);
+            return res;
+        }
+    }
+
+    @Override
+    public EsSearchResult searchV3(SearchCondition searchCondition) {
+        LogUtil.infof(log, "[searchV3],DAO,condition:{}", searchCondition);
+        var res = new EsSearchResult();
+        res.setData(new ArrayList<>());
+        res.setTotalPage(0);
+        res.setTotalRecordCount(0L);
+        res.setSizeOfPage(searchCondition.getSize());
+        SearchResponse<DiaryContent> response;
+        try {
+            // 搜索关键词query
+            List<Query> searchTextList = new ArrayList<>();
+            for (var searchText : searchCondition.getMultiSearchText()) {
+                var byContentTextQuery = MatchQuery.of(m -> m
+                        .field("content")
+                        .query(searchText)
+                )._toQuery();
+                searchTextList.add(byContentTextQuery);
+            }
+
+            // 时间限定
+            Query byDateRange = null;
+            if (searchCondition.getTimestampRange() != null) {
+                var dateRangeBuilder = new RangeQuery.Builder()
+                        .field("timestamp");
+                if (searchCondition.getTimestampRange().getGte() != null) {
+                    dateRangeBuilder.gte(JsonData.of(searchCondition.getTimestampRange().getGte()));
+                }
+                if (searchCondition.getTimestampRange().getLte() != null) {
+                    dateRangeBuilder.lte(JsonData.of(searchCondition.getTimestampRange().getLte()));
+                }
+                byDateRange = RangeQuery.of(r -> dateRangeBuilder)._toQuery();
+            }
+
+            // 作者限定
+            List<Query> authorQueryList = new ArrayList<>();
+            if (searchCondition.getAuthorIdPicker() != null && !searchCondition.getAuthorIdPicker().isAllSelect()) {
+                for (var authorId : searchCondition.getAuthorIdPicker().getPickContent()) {
+                    var byAuthorId = MatchQuery.of(m -> m
+                            .field("authorId")
+                            .query(authorId)
+                    )._toQuery();
+                    authorQueryList.add(byAuthorId);
+                }
+            }
+
+            // 整合最后的query
+            List<Query> finalQuery = new ArrayList<>(searchTextList);
+            if (byDateRange != null) {
+                finalQuery.add(byDateRange);
+            }
+            finalQuery.addAll(authorQueryList);
+
+            SearchRequest searchRequest = new SearchRequest.Builder()
+                    .index(DIARY_CONTENT_INDEX)
+                    .query(q -> q
+                            .bool(b -> b
+                                    .must(finalQuery)
+                            )
+                    )
+                    .aggregations("countPerYear", a -> a
+                            .dateHistogram(d -> d
+                                    .field("timestamp")
+                                    .calendarInterval(CalendarInterval.Year).format("yyyy")))
+                    .from(searchCondition.getSize() * searchCondition.getPage())
+                    .size(searchCondition.getSize())
+                    .build();
+
+            response = elasticsearchClient.search(searchRequest, DiaryContent.class);
+
+            if (response == null || response.hits() == null || response.hits().hits() == null) {
+                LogUtil.errorf(log, "[es],searchV3,error,response is null,search={}", searchCondition);
                 return res;
             }
 
