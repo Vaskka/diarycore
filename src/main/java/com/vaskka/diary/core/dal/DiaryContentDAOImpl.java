@@ -4,6 +4,7 @@ import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch._types.Result;
 import co.elastic.clients.elasticsearch._types.aggregations.CalendarInterval;
 import co.elastic.clients.elasticsearch._types.aggregations.DateHistogramBucket;
+import co.elastic.clients.elasticsearch._types.aggregations.HistogramBucket;
 import co.elastic.clients.elasticsearch._types.query_dsl.MatchQuery;
 import co.elastic.clients.elasticsearch._types.query_dsl.Query;
 import co.elastic.clients.elasticsearch._types.query_dsl.RangeQuery;
@@ -23,9 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Slf4j
 @Component("diaryContentDAO")
@@ -206,7 +205,11 @@ public class DiaryContentDAOImpl implements DiaryContentDAO {
                     .aggregations("countPerYear", a -> a
                             .dateHistogram(d -> d
                                     .field("timestamp")
-                                    .calendarInterval(CalendarInterval.Year).format("yyyy")))
+                                    .calendarInterval(CalendarInterval.Year)
+                                    .format("yyyy")))
+                    .aggregations("authorCount", a -> a
+                            .terms(s -> s
+                                    .field("authorId")))
                     .from(searchCondition.getSize() * searchCondition.getPage())
                     .size(searchCondition.getSize())
                     .build();
@@ -258,18 +261,28 @@ public class DiaryContentDAOImpl implements DiaryContentDAO {
         res.setTotalRecordCount(totalHits);
 
         // 统计聚合结果
-        List<DateHistogramBucket> buckets = response.aggregations()
+        List<DateHistogramBucket> bucketsDate = response.aggregations()
                 .get("countPerYear")
                 .dateHistogram()
                 .buckets().array();
         List<EsSearchResult.DateWithCountResult> aggDateWithCount = new ArrayList<>();
-        for (DateHistogramBucket bucket: buckets) {
+        for (DateHistogramBucket bucket: bucketsDate) {
             EsSearchResult.DateWithCountResult dateWithCountResult = new EsSearchResult.DateWithCountResult();
             dateWithCountResult.setCount(bucket.docCount());
             dateWithCountResult.setDate(bucket.keyAsString());
             aggDateWithCount.add(dateWithCountResult);
         }
         res.setAggDateWithCount(aggDateWithCount);
+
+        // 聚合作者
+        var bucketsAuthor = response.aggregations()
+                .get("authorCount")
+                .lterms().buckets().array();
+        Map<String, Long> authorCount = new HashMap<>();
+        for (var bucket: bucketsAuthor) {
+            authorCount.put(bucket.keyAsString(), bucket.docCount());
+        }
+        res.setAggAuthorCount(authorCount);
         return res;
     }
 }

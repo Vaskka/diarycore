@@ -3,6 +3,7 @@ package com.vaskka.diary.core.model.bizobject;
 import lombok.Data;
 
 import java.util.List;
+import java.util.Map;
 
 @Data
 public class EsSearchResult {
@@ -23,4 +24,6 @@ public class EsSearchResult {
     private Integer sizeOfPage;
 
     private List<DateWithCountResult> aggDateWithCount;
+
+    private Map<String, Long> aggAuthorCount;
 }

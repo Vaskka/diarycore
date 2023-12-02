@@ -146,7 +146,7 @@ public class DiaryServiceImpl implements DiaryFacade {
         result.setTotalPage(searchResult.getTotalPage());
         result.setTotalRecordCount(searchResult.getTotalRecordCount());
         result.setSizeOfPage(searchCondition.getSize());
-        result.setSearchResultSummary(SearchResultSummary.buildSummary(innerList, searchResult.getAggDateWithCount()));
+        result.setSearchResultSummary(SearchResultSummary.buildSummary(innerList, searchResult.getAggDateWithCount(), searchResult.getAggAuthorCount()));
         return result;
     }
 
@@ -163,7 +163,7 @@ public class DiaryServiceImpl implements DiaryFacade {
         result.setTotalPage(searchResult.getTotalPage());
         result.setTotalRecordCount(searchResult.getTotalRecordCount());
         result.setSizeOfPage(searchCondition.getSize());
-        result.setSearchResultSummary(SearchResultSummary.buildSummary(innerList, searchResult.getAggDateWithCount()));
+        result.setSearchResultSummary(SearchResultSummary.buildSummary(innerList, searchResult.getAggDateWithCount(), searchResult.getAggAuthorCount()));
         return result;
     }
 

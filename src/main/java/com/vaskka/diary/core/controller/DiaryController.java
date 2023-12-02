@@ -115,10 +115,17 @@ public class DiaryController extends NeedAuthController {
         var searchCondition = new SearchCondition();
         searchCondition.setPage(page);
         searchCondition.setSize(size);
-        searchCondition.setAuthorIdPicker(SearchCondition.MultiPicker.build(request.getPickedAuthorId()));
+        //searchCondition.setAuthorIdPicker(SearchCondition.MultiPicker.build(request.getPickedAuthorId()));
         searchCondition.setMultiSearchText(request.getMultiSearchText());
         if (request.getDateRange() != null) {
+            if (request.getDateRange().getGe().length() == 4) {
+                request.getDateRange().setGe(request.getDateRange().getGe() + "-01-01");
+            }
             long gte = CommonUtil.parseStrDate2Timestamp(request.getDateRange().getGe());
+
+            if (request.getDateRange().getLe().length() == 4) {
+                request.getDateRange().setLe(request.getDateRange().getLe() + "-01-01");
+            }
             long lte = CommonUtil.parseStrDate2Timestamp(request.getDateRange().getLe());
             searchCondition.setTimestampRange(SearchCondition.RangePicker.getInstance(gte, lte));
         }
