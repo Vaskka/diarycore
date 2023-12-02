@@ -59,6 +59,7 @@ public interface DiaryFacade {
      * @param searchCondition 查找condition
      * @return list
      */
+    @Deprecated
     List<Diary> simpleSearch(SearchCondition searchCondition);
 
     /**
@@ -67,6 +68,7 @@ public interface DiaryFacade {
      * @param searchCondition condition
      * @return return
      */
+    @Deprecated
     SearchResultPageable searchPageable(SearchCondition searchCondition);
 
     SearchResultPageable searchV3(SearchCondition searchCondition);

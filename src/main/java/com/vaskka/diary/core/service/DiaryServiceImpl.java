@@ -116,6 +116,7 @@ public class DiaryServiceImpl implements DiaryFacade {
     }
 
     @Override
+    @Deprecated
     public List<Diary> simpleSearch(SearchCondition searchCondition) {
         var searchResult = diaryContentDAO.simpleSearch(searchCondition.getSearchText());
         return searchResult.stream()
@@ -132,6 +133,7 @@ public class DiaryServiceImpl implements DiaryFacade {
      * @return list of diary
      */
     @Override
+    @Deprecated
     public SearchResultPageable searchPageable(SearchCondition searchCondition) {
         var searchResult = diaryContentDAO.searchPageable(searchCondition.getSearchText(), searchCondition.getSize(), searchCondition.getPage());
         var innerData = searchResult.getData();
@@ -146,7 +148,7 @@ public class DiaryServiceImpl implements DiaryFacade {
         result.setTotalPage(searchResult.getTotalPage());
         result.setTotalRecordCount(searchResult.getTotalRecordCount());
         result.setSizeOfPage(searchCondition.getSize());
-        result.setSearchResultSummary(SearchResultSummary.buildSummary(innerList, searchResult.getAggDateWithCount(), searchResult.getAggAuthorCount()));
+        result.setSearchResultSummary(buildSummary(searchResult));
         return result;
     }
 
@@ -163,7 +165,7 @@ public class DiaryServiceImpl implements DiaryFacade {
         result.setTotalPage(searchResult.getTotalPage());
         result.setTotalRecordCount(searchResult.getTotalRecordCount());
         result.setSizeOfPage(searchCondition.getSize());
-        result.setSearchResultSummary(SearchResultSummary.buildSummary(innerList, searchResult.getAggDateWithCount(), searchResult.getAggAuthorCount()));
+        result.setSearchResultSummary(buildSummary(searchResult));
         return result;
     }
 
@@ -216,5 +218,24 @@ public class DiaryServiceImpl implements DiaryFacade {
 
     private Diary buildFromDiaryContent(DiaryContent diaryContent) {
         return buildDiary(diaryMapper.findById(Long.parseLong(diaryContent.getDiaryId())));
+    }
+
+    public SearchResultSummary buildSummary(EsSearchResult searchResultSummary) {
+        SearchResultSummary summary = new SearchResultSummary();
+        summary.setAggDateWithCount(searchResultSummary.getAggDateWithCount());
+        summary.setAggDateWithCountMonth(searchResultSummary.getAggDateWithCountMonth());
+
+        // authorCount and authorMap
+        summary.setAuthorCountMap(searchResultSummary.getAggAuthorCount());
+
+        if (searchResultSummary.getAggAuthorCount() != null) {
+            Map<String, String> authorMap = new HashMap<>();
+            for (Map.Entry<String, Long> entry : searchResultSummary.getAggAuthorCount().entrySet()) {
+                authorMap.put(entry.getKey(), authorServiceImpl.findById(entry.getKey()).getAuthorName());
+            }
+            summary.setAuthorMap(authorMap);
+        }
+
+        return summary;
     }
 }

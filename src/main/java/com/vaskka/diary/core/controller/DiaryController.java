@@ -107,7 +107,7 @@ public class DiaryController extends NeedAuthController {
         return ResultCodeUtil.buildCommonResponse(SearchDiaryPageableResponse::new, rawData, ResultCodeEnum.OK);
     }
 
-    @Operation(summary = "搜索(分页)")
+    @Operation(summary = "高级搜索")
     @PostMapping(value = "/pageable/search/multi/{size}/{page}")
     public SearchDiaryPageableResponse searchV3(@PathVariable("size") Integer size, @PathVariable("page") Integer page,
                                               @RequestBody SearchDiaryRequest request) {
@@ -120,11 +120,15 @@ public class DiaryController extends NeedAuthController {
         if (request.getDateRange() != null) {
             if (request.getDateRange().getGe().length() == 4) {
                 request.getDateRange().setGe(request.getDateRange().getGe() + "-01-01");
+            } else if (request.getDateRange().getGe().length() == 7) {
+                request.getDateRange().setGe(request.getDateRange().getGe() + "-01");
             }
             long gte = CommonUtil.parseStrDate2Timestamp(request.getDateRange().getGe());
 
             if (request.getDateRange().getLe().length() == 4) {
                 request.getDateRange().setLe(request.getDateRange().getLe() + "-01-01");
+            } else if (request.getDateRange().getLe().length() == 7) {
+                request.getDateRange().setLe(request.getDateRange().getLe() + "-01");
             }
             long lte = CommonUtil.parseStrDate2Timestamp(request.getDateRange().getLe());
             searchCondition.setTimestampRange(SearchCondition.RangePicker.getInstance(gte, lte));

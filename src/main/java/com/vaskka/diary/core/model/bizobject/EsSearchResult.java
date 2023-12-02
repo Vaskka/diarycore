@@ -25,5 +25,7 @@ public class EsSearchResult {
 
     private List<DateWithCountResult> aggDateWithCount;
 
+    private List<DateWithCountResult> aggDateWithCountMonth;
+
     private Map<String, Long> aggAuthorCount;
 }
