@@ -1,18 +1,16 @@
 import json
 import os
 import re
-import time
 from openpyxl import load_workbook
 
 from dal import es, mysql
 from utils.util import *
 
-
 maybe_error = []
 
 
 def excel_rd(path):
-    wb = load_workbook(filename = path)
+    wb = load_workbook(filename=path)
     ws = wb.active
 
     res = []
@@ -48,7 +46,7 @@ def excel_rd(path):
             col_i_field[i] = 'ext'
         else:
             raise RuntimeError('非法列:' + cell)
-        
+
     i = 0
     for rows in ws.rows:
         if i == 0:
@@ -79,6 +77,7 @@ def author_exist_or_create(author_name):
 
     return mysql.select_by_author_name(author_name=author_name)['id']
 
+
 def insert_data(author_id, raw_item):
     # insert db and es
     print('==================', raw_item['diary_date_timestamp'])
@@ -94,7 +93,8 @@ def insert_data(author_id, raw_item):
     }
     comment = '' if raw_item['comment'] is None else raw_item['comment']
     # detect error timestamp
-    diary_record = mysql.select_by_author_id_title_timestamp(author_id=author_id, title=raw_item['diaty_title'], timestamp=timestamp)
+    diary_record = mysql.select_by_author_id_title_timestamp(author_id=author_id, title=raw_item['diaty_title'],
+                                                             timestamp=timestamp)
     if diary_record is not None:
         maybe_error.append({
             'authorId': author_id,
@@ -104,27 +104,33 @@ def insert_data(author_id, raw_item):
         return
         pass
 
-    diary_record = mysql.select_by_author_id_title_sub_title(author_id=author_id, title=raw_item['diaty_title'], sub_title=raw_item['sub_title'])
+    diary_record = mysql.select_by_author_id_title_sub_title(author_id=author_id, title=raw_item['diaty_title'],
+                                                             sub_title=raw_item['sub_title'])
     if diary_record is None:
-        mysql.insert_mysql_diary(author_id=author_id, 
-                                title=raw_item['diaty_title'], 
-                                sub_title=raw_item['sub_title'], 
-                                timestamp=timestamp, 
-                                start_page=start_page, 
-                                end_page=end_page, 
-                                comment=comment, 
-                                ext_param=json.dumps(ext_param))
-        diary_record = mysql.select_by_author_id_title_sub_title(author_id=author_id, title=raw_item['diaty_title'], sub_title=raw_item['sub_title'])
+        mysql.insert_mysql_diary(author_id=author_id,
+                                 title=raw_item['diaty_title'],
+                                 sub_title=raw_item['sub_title'],
+                                 timestamp=timestamp,
+                                 start_page=start_page,
+                                 end_page=end_page,
+                                 comment=comment,
+                                 ext_param=json.dumps(ext_param))
+        diary_record = mysql.select_by_author_id_title_sub_title(author_id=author_id, title=raw_item['diaty_title'],
+                                                                 sub_title=raw_item['sub_title'])
     else:
         print('mysql record exist:', raw_item['diaty_title'] + '_' + raw_item['sub_title'])
     diary_id = diary_record['id']
 
     if not es.exists(diary_id):
-        es.insert_es(id=diary_id, diary_id=diary_id, author_id=author_id, timestamp=timestamp, content=raw_item['content'])
+        es.insert_es(id=diary_id, diary_id=diary_id, author_id=author_id, timestamp=timestamp,
+                     title=raw_item['diaty_title'], sub_title=raw_item['sub_title'], content=raw_item['content'],
+                     comment=comment)
     else:
         print('es record exist:', diary_id)
         es.del_es(id=diary_id)
-        es.insert_es(id=diary_id, diary_id=diary_id, author_id=author_id, timestamp=timestamp, content=raw_item['content'])
+        es.insert_es(id=diary_id, diary_id=diary_id, author_id=author_id, timestamp=timestamp,
+                     title=raw_item['diaty_title'], sub_title=raw_item['sub_title'], content=raw_item['content'],
+                     comment=comment)
     print('process done,{},{}', author_id, raw_item)
     pass
 
@@ -138,13 +144,13 @@ def process(file_name):
 
     for excel_obj in raw_excel_li:
         insert_data(author_id, excel_obj)
-        
+
     pass
 
 
 def main():
     d = './excel'
-    for filepath,dirnames,filenames in os.walk(d):
+    for filepath, dirnames, filenames in os.walk(d):
         for filename in filenames:
             path = d + os.sep + filename
             if '.xlsx' in filename and not filename.startswith('~$'):
@@ -152,9 +158,9 @@ def main():
                 process(path)
             else:
                 print('not excel, skip:', path)
-    
+
     print('all maybe error:', maybe_error)
-    pass    
+    pass
 
 
 def debug():
@@ -166,5 +172,7 @@ def debug():
 if __name__ == '__main__':
     mysql.setMysqlMock(False)
     es.setEsMock(False)
+    if not es.exists_index():
+        es.create_index()
     main()
     # debug()
