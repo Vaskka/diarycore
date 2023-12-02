@@ -15,6 +15,12 @@ public class DiaryContent {
 
     private String content;
 
+    private String title;
+
+    private String subTitle;
+
     private long timestamp;
+
+    private String comment;
 
 }

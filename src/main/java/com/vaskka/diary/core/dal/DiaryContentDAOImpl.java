@@ -268,7 +268,8 @@ public class DiaryContentDAOImpl implements DiaryContentDAO {
         List<DateHistogramBucket> bucketsDate = response.aggregations()
                 .get("countPerYear")
                 .dateHistogram()
-                .buckets().array();
+                .buckets()
+                .array();
         List<EsSearchResult.DateWithCountResult> aggDateWithCount = new ArrayList<>();
         for (DateHistogramBucket bucket: bucketsDate) {
             EsSearchResult.DateWithCountResult dateWithCountResult = new EsSearchResult.DateWithCountResult();
@@ -282,7 +283,8 @@ public class DiaryContentDAOImpl implements DiaryContentDAO {
         List<DateHistogramBucket> bucketsDateMonth = response.aggregations()
                 .get("countPerMonth")
                 .dateHistogram()
-                .buckets().array();
+                .buckets()
+                .array();
         List<EsSearchResult.DateWithCountResult> aggMonthWithCount = new ArrayList<>();
         for (DateHistogramBucket bucket: bucketsDateMonth) {
             EsSearchResult.DateWithCountResult dateWithCountResult = new EsSearchResult.DateWithCountResult();
@@ -295,10 +297,12 @@ public class DiaryContentDAOImpl implements DiaryContentDAO {
         // 聚合作者
         var bucketsAuthor = response.aggregations()
                 .get("authorCount")
-                .lterms().buckets().array();
+                .sterms()
+                .buckets()
+                .array();
         Map<String, Long> authorCount = new HashMap<>();
         for (var bucket: bucketsAuthor) {
-            authorCount.put(String.valueOf(bucket.key()), bucket.docCount());
+            authorCount.put(bucket.key().stringValue(), bucket.docCount());
         }
         res.setAggAuthorCount(authorCount);
         return res;

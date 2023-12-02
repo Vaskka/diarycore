@@ -50,7 +50,7 @@ def create_index():
             "content": {
                 "type": "text"
             },
-            "comments": {
+            "comment": {
                 "type": "text"
             }
         }
