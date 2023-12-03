@@ -79,6 +79,7 @@ def search_es(search_content):
 
     return es.search(index=ES_INDEX, body=body)
 
+
 def del_es(id):
     if MOCK_ES:
         return

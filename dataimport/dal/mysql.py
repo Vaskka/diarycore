@@ -44,6 +44,34 @@ def insert_mysql_author(author_name, author_avatar_url, extern_param):
     pass
 
 
+def select_all_author():
+    with db_conn.cursor() as cursor:
+        # Create a new record
+        sql = "SELECT * FROM `author`"
+        cursor.execute(sql)
+        return cursor.fetchall()
+    pass
+
+
+def select_by_author_id_limit(author_id, limit):
+    with db_conn.cursor() as cursor:
+        # Create a new record
+        sql = "SELECT * FROM `diary` WHERE `author_id` = %s LIMIT %s"
+        cursor.execute(sql, (author_id, limit))
+        return cursor.fetchall()
+    pass
+
+
+def update_origin_pic(author_id):
+    with db_conn.cursor() as cursor:
+        sql = ("UPDATE `diary` d "
+               "SET d.origin_pic = CONCAT('http://localhost/', d.diary_title, '_page_', d.start_page, '.png') "
+               "WHERE d.start_page is not NULL AND d.author_id=%s")
+        cursor.execute(sql, author_id)
+
+    db_conn.commit()
+
+
 def select_by_author_id_title_sub_title(author_id, title, sub_title):
     with db_conn.cursor() as cursor:
         # Create a new record

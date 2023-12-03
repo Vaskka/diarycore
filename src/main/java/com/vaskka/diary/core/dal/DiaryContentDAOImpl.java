@@ -1,12 +1,14 @@
 package com.vaskka.diary.core.dal;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
+import co.elastic.clients.elasticsearch._types.FieldValue;
 import co.elastic.clients.elasticsearch._types.Result;
 import co.elastic.clients.elasticsearch._types.aggregations.CalendarInterval;
 import co.elastic.clients.elasticsearch._types.aggregations.DateHistogramBucket;
 import co.elastic.clients.elasticsearch._types.query_dsl.MatchQuery;
 import co.elastic.clients.elasticsearch._types.query_dsl.Query;
 import co.elastic.clients.elasticsearch._types.query_dsl.RangeQuery;
+import co.elastic.clients.elasticsearch._types.query_dsl.TermsQuery;
 import co.elastic.clients.elasticsearch.core.GetResponse;
 import co.elastic.clients.elasticsearch.core.IndexResponse;
 import co.elastic.clients.elasticsearch.core.SearchRequest;
@@ -24,6 +26,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Component("diaryContentDAO")
@@ -187,6 +190,19 @@ public class DiaryContentDAOImpl implements DiaryContentDAO {
                 }
             }
 
+            // authorId反选
+            Query authorIdNotInQuery = null;
+            if (searchCondition.getAuthorIdNotIn() != null) {
+                authorIdNotInQuery = TermsQuery.of(m -> m
+                        .field("authorId")
+                        .terms(t -> t
+                                .value(searchCondition.getAuthorIdNotIn()
+                                        .stream()
+                                        .map(FieldValue::of)
+                                        .collect(Collectors.toList())))
+                )._toQuery();
+            }
+
             // 整合最后的query
             List<Query> finalQuery = new ArrayList<>(searchTextList);
             if (byDateRange != null) {
@@ -194,11 +210,18 @@ public class DiaryContentDAOImpl implements DiaryContentDAO {
             }
             finalQuery.addAll(authorQueryList);
 
+            // 整合反选query
+            List<Query> finalQueryNotIn = new ArrayList<>();
+            if (authorIdNotInQuery != null) {
+                finalQueryNotIn.add(authorIdNotInQuery);
+            }
+
             SearchRequest searchRequest = new SearchRequest.Builder()
                     .index(DIARY_CONTENT_INDEX)
                     .query(q -> q
                             .bool(b -> b
                                     .must(finalQuery)
+                                    .mustNot(finalQueryNotIn)
                             )
                     )
                     .aggregations("countPerYear", a -> a

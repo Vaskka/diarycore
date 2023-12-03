@@ -79,6 +79,11 @@ public class SearchCondition {
 
     private MultiPicker<String> authorIdPicker;
 
+    /**
+     * authorId反过滤
+     */
+    private List<String> authorIdNotIn;
+
     private RangePicker<Long> timestampRange;
 
     private Integer page;

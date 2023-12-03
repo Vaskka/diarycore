@@ -115,6 +115,7 @@ public class DiaryController extends NeedAuthController {
         var searchCondition = new SearchCondition();
         searchCondition.setPage(page);
         searchCondition.setSize(size);
+        searchCondition.setAuthorIdNotIn(request.getAuthorIdNotIn());
         //searchCondition.setAuthorIdPicker(SearchCondition.MultiPicker.build(request.getPickedAuthorId()));
         searchCondition.setMultiSearchText(request.getMultiSearchText());
         if (request.getDateRange() != null) {

@@ -148,7 +148,7 @@ public class DiaryServiceImpl implements DiaryFacade {
         result.setTotalPage(searchResult.getTotalPage());
         result.setTotalRecordCount(searchResult.getTotalRecordCount());
         result.setSizeOfPage(searchCondition.getSize());
-        result.setSearchResultSummary(buildSummary(searchResult));
+        result.setSearchResultSummary(buildSummary(searchCondition, searchResult));
         return result;
     }
 
@@ -165,7 +165,7 @@ public class DiaryServiceImpl implements DiaryFacade {
         result.setTotalPage(searchResult.getTotalPage());
         result.setTotalRecordCount(searchResult.getTotalRecordCount());
         result.setSizeOfPage(searchCondition.getSize());
-        result.setSearchResultSummary(buildSummary(searchResult));
+        result.setSearchResultSummary(buildSummary(searchCondition, searchResult));
         return result;
     }
 
@@ -220,7 +220,7 @@ public class DiaryServiceImpl implements DiaryFacade {
         return buildDiary(diaryMapper.findById(Long.parseLong(diaryContent.getDiaryId())));
     }
 
-    public SearchResultSummary buildSummary(EsSearchResult searchResultSummary) {
+    public SearchResultSummary buildSummary(SearchCondition searchCondition, EsSearchResult searchResultSummary) {
         SearchResultSummary summary = new SearchResultSummary();
         summary.setAggDateWithCount(searchResultSummary.getAggDateWithCount());
         summary.setAggDateWithCountMonth(searchResultSummary.getAggDateWithCountMonth());
@@ -230,8 +230,8 @@ public class DiaryServiceImpl implements DiaryFacade {
 
         if (searchResultSummary.getAggAuthorCount() != null) {
             Map<String, String> authorMap = new HashMap<>();
-            for (Map.Entry<String, Long> entry : searchResultSummary.getAggAuthorCount().entrySet()) {
-                authorMap.put(entry.getKey(), authorServiceImpl.findById(entry.getKey()).getAuthorName());
+            for (var author : authorServiceImpl.findAll()) {
+                authorMap.put(author.getAuthorId(), author.getAuthorName());
             }
             summary.setAuthorMap(authorMap);
         }

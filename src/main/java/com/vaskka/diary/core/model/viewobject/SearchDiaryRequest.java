@@ -27,6 +27,11 @@ public class SearchDiaryRequest extends NeedAuthRequest {
     private List<String> pickedAuthorId;
 
     /**
+     * authorId反检索
+     */
+    private List<String> authorIdNotIn;
+
+    /**
      * 搜索的文字内容
      */
     private String searchText;

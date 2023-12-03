@@ -20,7 +20,10 @@ def get_start_page(raw_page):
         return None
 
     if raw_page.find('-') == -1:
-        return None
+        if raw_page.startswith('P') or raw_page.startswith('p'):
+            return raw_page[1:]
+        else:
+            return raw_page
     
     start = raw_page.split('-')[0]
     if start.startswith('P') or start.startswith('p'):
