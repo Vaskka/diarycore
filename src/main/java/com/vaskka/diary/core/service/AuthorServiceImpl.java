@@ -2,6 +2,7 @@ package com.vaskka.diary.core.service;
 
 import com.vaskka.diary.core.constant.BizPart;
 import com.vaskka.diary.core.dal.AuthorMapper;
+import com.vaskka.diary.core.dal.AuthorTypeMapper;
 import com.vaskka.diary.core.facade.AuthorFacade;
 import com.vaskka.diary.core.model.bizobject.Author;
 import com.vaskka.diary.core.model.dataobject.AuthorDO;
@@ -25,6 +26,9 @@ public class AuthorServiceImpl implements AuthorFacade {
     @Resource
     private UnionIdProcessor uidComponent;
 
+    @Resource
+    private AuthorTypeMapper authorTypeMapper;
+
     @Override
     public List<Author> findAll() {
         return authorMapper.findAll()
@@ -42,6 +46,21 @@ public class AuthorServiceImpl implements AuthorFacade {
     public void addAuthor(Author author) {
         Integer effect = authorMapper.insertAuthor(buildAuthorDO(author));
         LogUtil.infof(log, "[author],insert,effect:{}", effect);
+    }
+
+    @Override
+    public List<String> getAllAuthorType() {
+        return authorTypeMapper.getAuthorTypeNameDisc();
+    }
+
+    @Override
+    public List<Author> getAuthorByType(String authorType) {
+        return authorTypeMapper.getAuthorTypeByName(authorType)
+                .stream()
+                .map(authorTypeDO ->
+                        buildAuthor(
+                                authorMapper.findById(authorTypeDO.getAuthorId())))
+                .collect(Collectors.toList());
     }
 
     private Author buildAuthor(AuthorDO authorDO) {

@@ -36,15 +36,15 @@ public interface DiaryMapper {
 
     @Select(value = "SELECT diary_date_timestamp " +
             "FROM diary di " +
-            "WHERE di.author_id=#{authorId} " +
+            "WHERE di.author_name=#{authorName} " +
             "ORDER BY diary_date_timestamp LIMIT 1")
-    Long findDateFirst(@Param("authorId") Long authorId);
+    Long findDateFirst(@Param("authorName") String authorName);
 
     @Select(value = "SELECT diary_date_timestamp " +
             "FROM diary di " +
-            "WHERE di.author_id=#{authorId} " +
+            "WHERE di.author_name=#{authorName} " +
             "ORDER BY diary_date_timestamp DESC LIMIT 1")
-    Long findDateLatest(@Param("authorId") Long authorId);
+    Long findDateLatest(@Param("authorName") String authorName);
 
     @Select(value = "SELECT diary_date_timestamp " +
             "FROM diary di " +

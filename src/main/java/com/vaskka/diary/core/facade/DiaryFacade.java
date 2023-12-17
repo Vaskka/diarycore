@@ -35,10 +35,10 @@ public interface DiaryFacade {
 
     /**
      * 查找作者的日记between
-     * @param authorId authorId
+     * @param authorName authorName
      * @return list
      */
-    List<String> findDiaryBetween(String authorId);
+    List<String> findDiaryBetween(String authorName);
 
     /**
      * 查找datetime

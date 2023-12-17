@@ -12,4 +12,7 @@ public interface AuthorFacade {
 
     void addAuthor(Author author);
 
+    List<String> getAllAuthorType();
+
+    List<Author> getAuthorByType(String authorType);
 }

@@ -1,5 +1,6 @@
 package com.vaskka.diary.core.service;
 
+import com.google.common.collect.Lists;
 import com.vaskka.diary.core.dal.DiaryContentDAO;
 import com.vaskka.diary.core.dal.DiaryMapper;
 import com.vaskka.diary.core.exceptions.AuthorNotExistException;
@@ -91,15 +92,10 @@ public class DiaryServiceImpl implements DiaryFacade {
     }
 
     @Override
-    public List<String> findDiaryBetween(String authorId) {
-        List<String> res = new ArrayList<>();
-        String start = CommonUtil.getDateStr(diaryMapper.findDateFirst(Long.parseLong(authorId))).split("-")[0];
-        String end = CommonUtil.getDateStr(diaryMapper.findDateLatest(Long.parseLong(authorId))).split("-")[0];
-        for (int i = Integer.parseInt(start); i <= Integer.parseInt(end); i++) {
-            res.add(String.valueOf(i));
-        }
-
-        return res;
+    public List<String> findDiaryBetween(String authorName) {
+        String start = CommonUtil.getDateStr(diaryMapper.findDateFirst(authorName));
+        String end = CommonUtil.getDateStr(diaryMapper.findDateLatest(authorName));
+        return Lists.newArrayList(start, end);
     }
 
     @Override
