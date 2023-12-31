@@ -92,9 +92,9 @@ public class DiaryServiceImpl implements DiaryFacade {
     }
 
     @Override
-    public List<String> findDiaryBetween(String authorName) {
-        String start = CommonUtil.getDateStr(diaryMapper.findDateFirst(authorName));
-        String end = CommonUtil.getDateStr(diaryMapper.findDateLatest(authorName));
+    public List<String> findDiaryBetween(String authorId) {
+        String start = CommonUtil.getDateStr(diaryMapper.findDateFirst(authorId));
+        String end = CommonUtil.getDateStr(diaryMapper.findDateLatest(authorId));
         return Lists.newArrayList(start, end);
     }
 

@@ -55,10 +55,10 @@ public class DiaryController extends NeedAuthController {
     }
 
     @Operation(summary = "根据作者获取作者全部的日记的起止日期")
-    @PostMapping(value = "/find/diary/between/{authorName}")
-    public CommonResponse<List<String>> getDiaryBetween(@PathVariable(value = "authorName") String authorName,
+    @PostMapping(value = "/find/diary/between/{authorId}")
+    public CommonResponse<List<String>> getDiaryBetween(@PathVariable(value = "authorId") String authorId,
                                                   @RequestBody NeedAuthRequest request) {
-        var innerData = diaryServiceImpl.findDiaryBetween(authorName);
+        var innerData = diaryServiceImpl.findDiaryBetween(authorId);
         return ResultCodeUtil.buildCommonResponse(CommonResponse::new, innerData, ResultCodeEnum.OK);
     }
 
