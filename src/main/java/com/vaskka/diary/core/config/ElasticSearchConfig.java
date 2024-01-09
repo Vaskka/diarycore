@@ -14,8 +14,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import javax.net.ssl.SSLContext;
-
 @Configuration
 public class ElasticSearchConfig {
 
@@ -31,18 +29,8 @@ public class ElasticSearchConfig {
     @Value("${es.password}")
     private String password;
 
-    @Value("${es.fingerprint}")
-    private String fingerprint;
-
-    @Value("${es.https}")
-    private Boolean isHttps;
-
     @Bean(name = "elasticsearchClient")
     public ElasticsearchClient elasticsearchClient() {
-
-        SSLContext sslContext = TransportUtils
-                .sslContextFromCaFingerprint(fingerprint);
-
         BasicCredentialsProvider credsProv = new BasicCredentialsProvider();
         credsProv.setCredentials(
                 AuthScope.ANY, new UsernamePasswordCredentials(username, password)
@@ -50,11 +38,7 @@ public class ElasticSearchConfig {
 
         // Create the low-level client
         RestClient restClient = RestClient
-                .builder(new HttpHost(host, port, isHttps ? "https" : "http"))
-                .setHttpClientConfigCallback(hc -> hc
-                        .setSSLContext(sslContext)
-                        .setDefaultCredentialsProvider(credsProv)
-                )
+                .builder(new HttpHost(host, port, "http"))
                 .build();
 
 
