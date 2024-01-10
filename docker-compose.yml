@@ -2,33 +2,43 @@ version: '3'
 services:
   app:
     image: diarycore:latest
+    networks:
+      - diarynetworks
     ports:
       - "8081:8081"
     depends_on:
-      - mysql
-      - elasticsearch
+      - mysql_prod
+      - elasticsearch_prod
 
-  mysql:
+  mysql_prod:
     image: mysql:latest
     environment:
       MYSQL_ROOT_PASSWORD: d94d8c79
-#      MYSQL_DATABASE: diary
+      TZ: 'Asia/Shanghai'
+      MYSQL_INITDB_SKIP_TZINFO: 1  # 跳过时区初始化
+    networks:
+      - diarynetworks
     ports:
       - "3307:3306"
     volumes:
       - ${DATA_PATH}/mysql:/var/lib/mysql
       - ./diary.sql:/docker-entrypoint-initdb.d/init.sql
 
-  elasticsearch:
+  elasticsearch_prod:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.8.2
     environment:
       - discovery.type=single-node
       - "ES_JAVA_OPTS=-Des.enforce.bootstrap.checks=true"
       - "ELASTICSEARCH_USERNAME=diaryelastic"
       - "ELASTICSEARCH_PASSWORD=527b921a"
+    networks:
+      - diarynetworks
     ports:
       - "9200:9200"
       - "9300:9300"
     volumes:
       - ./elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
       - ${DATA_PATH}/es:/usr/share/elasticsearch/data
+networks:
+  diarynetworks:
+    driver: bridge
