@@ -2,9 +2,8 @@ from elasticsearch import Elasticsearch
 
 
 es = Elasticsearch(
-            "https://localhost:9200",
-            basic_auth=('elastic', 'HbeJwG5xONdI37mR-3ux'),
-            ssl_assert_fingerprint=('31764610aa16c11605084b4a57c215985ee694ca17d0b735ecc3959b5493fc43'),
+            "http://localhost:9200",
+            basic_auth=('diaryelastic', '527b921a'),
             verify_certs=False
         )
 

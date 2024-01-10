@@ -73,7 +73,10 @@ def detect_author(file_name):
 
 def author_exist_or_create(author_name):
     if not mysql.select_by_author_name(author_name=author_name):
+        # init author 
         mysql.insert_mysql_author(author_name=author_name, author_avatar_url='', extern_param='{}')
+        # relate author type
+        mysql.insert_mysql_author_type(author_name=author_name, type_name='未分类')
 
     return mysql.select_by_author_name(author_name=author_name)['id']
 

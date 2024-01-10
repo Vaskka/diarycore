@@ -2,7 +2,7 @@
 import pymysql
 
 
-db_conn = pymysql.connect(host='localhost',
+db_conn = pymysql.connect(host='localhost', port=3307,
                              user='root',
                              password='d94d8c79',
                              database='diary',
@@ -19,7 +19,7 @@ def insert_mysql_diary(author_id, title, sub_title, timestamp, start_page, end_p
     with db_conn.cursor() as cursor:
         # Create a new record
         sql = "INSERT INTO `diary` (`id`, `gmt_create`, `gmt_modified`, `author_id`, `diary_title`, `sub_title`, `diary_date_timestamp`, `start_page`, `end_page`, `origin_pic`, `comment`,`extern_param`) \
-            VALUES (NULL, NULL, NULL, %s, %s, %s, %s, %s, %s, NULL, %s, %s)"
+            VALUES (NULL, NOW(), NOW(), %s, %s, %s, %s, %s, %s, NULL, %s, %s)"
         cursor.execute(sql, (author_id, title, sub_title, timestamp, start_page, end_page, comment, ext_param))
 
     # connection is not autocommit by default. So you must commit to save
@@ -35,8 +35,24 @@ def insert_mysql_author(author_name, author_avatar_url, extern_param):
     with db_conn.cursor() as cursor:
         # Create a new record
         sql = "INSERT INTO `author` (`id`, `gmt_create`, `gmt_modified`, `author_name`, `author_avatar_url`, `extern_param`) \
-            VALUES (NULL, NULL, NULL, %s, %s, %s)"
+            VALUES (NULL, NOW(), NOW(), %s, %s, %s)"
         cursor.execute(sql, (author_name, author_avatar_url, extern_param))
+
+    # connection is not autocommit by default. So you must commit to save
+    # your changes.
+    db_conn.commit()
+    pass
+
+
+def insert_mysql_author_type(author_name, type_name):
+    if MOCK_MYSQL:
+        return
+    author_info = select_by_author_name(author_name=author_name)
+    with db_conn.cursor() as cursor:
+        # Create a new record
+        sql = "INSERT INTO `author_type` (`id`, `gmt_create`, `gmt_modified`, `author_id`, `author_type_name`, `extern_param`) \
+            VALUES (NULL, NOW(), NOW(), %s, %s, '{}')"
+        cursor.execute(sql, (author_info['id'], type_name, ))
 
     # connection is not autocommit by default. So you must commit to save
     # your changes.
