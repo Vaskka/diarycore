@@ -12,10 +12,11 @@ services:
     image: mysql:latest
     environment:
       MYSQL_ROOT_PASSWORD: d94d8c79
-      MYSQL_DATABASE: diary
-      MYSQL_USER: root
-      MYSQL_PASSWORD: d94d8c79
+#      MYSQL_DATABASE: diary
+    ports:
+      - "3307:3306"
     volumes:
+      - ${DATA_PATH}/mysql:/var/lib/mysql
       - ./diary.sql:/docker-entrypoint-initdb.d/init.sql
 
   elasticsearch:
@@ -30,3 +31,4 @@ services:
       - "9300:9300"
     volumes:
       - ./elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+      - ${DATA_PATH}/es:/usr/share/elasticsearch/data

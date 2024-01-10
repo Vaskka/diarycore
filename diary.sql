@@ -15,14 +15,16 @@
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
+
+CREATE DATABASE IF NOT EXISTS diary CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE diary;
 --
 -- Table structure for table `author`
 --
 
-DROP TABLE IF EXISTS `author`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `author` (
+CREATE TABLE IF NOT EXISTS `author` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `gmt_create` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `gmt_modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -38,10 +40,9 @@ CREATE TABLE `author` (
 -- Table structure for table `author_type`
 --
 
-DROP TABLE IF EXISTS `author_type`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `author_type` (
+CREATE TABLE IF NOT EXISTS `author_type` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `gmt_create` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `gmt_modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -56,10 +57,9 @@ CREATE TABLE `author_type` (
 -- Table structure for table `diary`
 --
 
-DROP TABLE IF EXISTS `diary`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `diary` (
+CREATE TABLE IF NOT EXISTS `diary` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `gmt_create` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `gmt_modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -82,10 +82,9 @@ CREATE TABLE `diary` (
 -- Table structure for table `user`
 --
 
-DROP TABLE IF EXISTS `user`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `user` (
+CREATE TABLE IF NOT EXISTS `user` (
   `id` bigint(20) NOT NULL,
   `gmt_create` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `gmt_modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
