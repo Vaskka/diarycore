@@ -136,7 +136,7 @@ public class DiaryController extends NeedAuthController {
         }
 
         var rawData = diaryServiceImpl.searchV3(searchCondition);
-        LogUtil.infof(log, "[searchV3],final result:{}", rawData);
+        // LogUtil.infof(log, "[searchV3],final result:{}", rawData);
         return ResultCodeUtil.buildCommonResponse(SearchDiaryPageableResponse::new, rawData, ResultCodeEnum.OK);
     }
 
