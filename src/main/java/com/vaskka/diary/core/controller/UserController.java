@@ -26,12 +26,12 @@ public class UserController extends NeedAuthController {
     @Resource
     private AuthFacade authServiceImpl;
 
-    @Operation(summary = "注册")
-    @PostMapping(value = "/register")
-    public RegisterResponse register(@RequestBody RegisterRequest request) {
-        var user = userCenterService.register(request.getUserName(), request.getAvatarUrl(), request.getPsw());
-        return ResultCodeUtil.buildCommonResponse(RegisterResponse::new, user, ResultCodeEnum.OK);
-    }
+//    @Operation(summary = "注册")
+//    @PostMapping(value = "/register")
+//    public RegisterResponse register(@RequestBody RegisterRequest request) {
+//        var user = userCenterService.registerNormal(request.getUserName(), request.getAvatarUrl(), request.getPsw());
+//        return ResultCodeUtil.buildCommonResponse(RegisterResponse::new, user, ResultCodeEnum.OK);
+//    }
 
     @Operation(summary = "登陆")
     @GetMapping(value = "/auth/login")

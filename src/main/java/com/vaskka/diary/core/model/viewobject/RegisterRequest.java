@@ -7,8 +7,6 @@ public class RegisterRequest {
 
     private String userName;
 
-    private String avatarUrl;
-
     private String psw;
 
 }

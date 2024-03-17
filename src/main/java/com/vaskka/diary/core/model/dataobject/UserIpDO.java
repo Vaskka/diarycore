@@ -5,7 +5,7 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 @Data
-public class UserDO {
+public class UserIpDO {
 
     private Long id;
 
@@ -13,15 +13,7 @@ public class UserDO {
 
     private LocalDateTime gmtModified;
 
-    private String userName;
+    private String ip;
 
-    private String ips;
-
-    private String userType;
-
-    private String psw;
-
-    private String externParam;
-
-
+    private Long refUserId;
 }

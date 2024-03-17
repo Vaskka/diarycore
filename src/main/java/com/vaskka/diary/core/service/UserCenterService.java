@@ -1,21 +1,22 @@
 package com.vaskka.diary.core.service;
 
 import com.alibaba.fastjson.JSONObject;
-import com.google.common.base.Strings;
 import com.vaskka.diary.core.constant.BizPart;
+import com.vaskka.diary.core.constant.UserType;
+import com.vaskka.diary.core.dal.UserIpMapper;
 import com.vaskka.diary.core.dal.UserMapper;
-import com.vaskka.diary.core.exceptions.UserCenterException;
-import com.vaskka.diary.core.exceptions.UserInfoUpdateException;
 import com.vaskka.diary.core.facade.UserCenterFacade;
 import com.vaskka.diary.core.model.bizobject.User;
 import com.vaskka.diary.core.model.dataobject.UserDO;
+import com.vaskka.diary.core.model.dataobject.UserIpDO;
 import com.vaskka.diary.core.utils.LogUtil;
 import com.vaskka.diary.core.utils.uid.UnionIdProcessor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.time.LocalDateTime;
+import java.util.List;
 
 @Slf4j
 @Service("userCenterService")
@@ -25,61 +26,73 @@ public class UserCenterService implements UserCenterFacade {
     private UserMapper userMapper;
 
     @Resource
+    private UserIpMapper userIpMapper;
+
+    @Resource
     private UnionIdProcessor globalUidComponent;
 
     @Override
-    public User register(String userName, String avatarUrl, String psw) {
-
-        var now = LocalDateTime.now();
+    @Transactional
+    public User registerAdmin(String userName, String psw) {
         UserDO userDO = new UserDO();
-        userDO.setGmtCreate(now);
-        userDO.setGmtModified(now);
+        userDO.setUserType(UserType.ADMIN.name());
         userDO.setUserName(userName);
-        userDO.setAvatarUrl(avatarUrl);
-        userDO.setPsw(psw);
         userDO.setId(globalUidComponent.getUnionId(BizPart.USER));
-        userDO.setExternParam(new JSONObject().toJSONString());
+        userDO.setPsw(psw);
+        userDO.setExternParam("{}");
         userMapper.insertUser(userDO);
-        LogUtil.infof(log, "[userCenter],register,success register userName:{}", userName);
-        return buildUserFromDO(userDO);
+        return buildFromDO(userDO);
+    }
+
+    @Override
+    @Transactional
+    public User registerNormal(String userName, String ips) {
+        UserDO userDO = new UserDO();
+        userDO.setUserType(UserType.NORMAL.name());
+        userDO.setUserName(userName);
+        userDO.setId(globalUidComponent.getUnionId(BizPart.USER));
+        userDO.setIps(ips);
+        userDO.setExternParam("{}");
+        userMapper.insertUser(userDO);
+        return buildFromDO(userDO);
     }
 
     @Override
     public User getUserProfile(String userId) {
-        UserDO userDO = userMapper.findById(Long.parseLong(userId));
-        if (userDO == null) {
-            LogUtil.errorf(log, "[userCenter],get profile err,uid:{}", userId);
-            throw new UserCenterException("user not exist error");
-        }
-
-        return buildUserFromDO(userDO);
+        return buildFromDO(userMapper.findById(Long.parseLong(userId)));
     }
 
     @Override
-    public User updateUserInfo(String userId, String userName, String avatarUrl) {
-        if (Strings.isNullOrEmpty(userName) || Strings.isNullOrEmpty(avatarUrl)) {
-            throw new UserInfoUpdateException();
+    @Transactional
+    public Integer updateUserIps(String userId, List<String> ips) {
+        var userIpList = userIpMapper.findByRefUserId(Long.valueOf(userId));
+        for (var userIpDO : userIpList) {
+            userIpMapper.deleteByIp(userIpDO.getIp());
         }
 
-        Integer effectRow = userMapper.updateUserInfo(Long.parseLong(userId), userName, avatarUrl);
-        if (effectRow == null || effectRow == 0) {
-            LogUtil.errorf(log, "[userCenter],updateUserInfo error");
-            throw new UserInfoUpdateException();
+        int count = 0;
+        for (String ip : ips) {
+            UserIpDO userIpDO = new UserIpDO();
+            userIpDO.setRefUserId(Long.valueOf(userId));
+            userIpDO.setIp(ip);
+            count += userIpMapper.insertUserIp(userIpDO);
         }
-        LogUtil.infof(log, "[updateUserInfo],{},userName={},avatarUrl={}", userId, userName, avatarUrl);
-        return getUserProfile(userId);
+        return count;
     }
 
-    /**
-     * DO -> BO
-     * @param userDO user data object
-     * @return User
-     */
-    private User buildUserFromDO(UserDO userDO) {
+    @Override
+    @Transactional
+    public User updateUserName(String userId, String userName) {
+        Integer effect = userMapper.updateUserName(Long.valueOf(userId), userName);
+        LogUtil.infof(log, "[userCenter],updateUserName,userId={},userName={},eff={}", userId, userName, effect);
+        return buildFromDO(userMapper.findById(Long.valueOf(userId)));
+    }
+
+    private User buildFromDO(UserDO userDO) {
         User user = new User();
-        user.setUid(userDO.getId().toString());
+        user.setUid(String.valueOf(userDO.getId()));
+        user.setUserType(userDO.getUserType());
         user.setUserName(userDO.getUserName());
-        user.setAvatarUrl(userDO.getAvatarUrl());
         user.setExternParam(JSONObject.parseObject(userDO.getExternParam()));
         return user;
     }

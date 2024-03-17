@@ -7,16 +7,16 @@ import org.apache.ibatis.annotations.*;
 public interface UserMapper {
 
     @Select(value = "SELECT id, gmt_create, gmt_modified, " +
-            "user_name, avatar_url, psw, extern_param " +
+            "user_name, ips, user_type, psw, extern_param " +
             "FROM user u where u.id=#{id}")
     UserDO findById(@Param("id") Long id);
 
-    @Insert(value = "INSERT INTO user(id, gmt_create, gmt_modified, user_name, avatar_url, psw, extern_param) " +
+    @Insert(value = "INSERT INTO user(id, gmt_create, gmt_modified, user_name, ips, user_type, psw, extern_param) " +
             "VALUES (#{id}, #{gmtCreate, jdbcType=TIMESTAMP}, #{gmtModified, jdbcType=TIMESTAMP}, " +
-            "#{userName}, #{avatarUrl}, #{psw}, #{externParam})")
+            "#{userName}, #{ips}, #{userType}, #{psw}, #{externParam})")
     Integer insertUser(UserDO userDO);
 
-    @Update(value = "UPDATE user SET user_name=#{userName}, avatar_url=#{avatarUrl} " +
+    @Update(value = "UPDATE user SET user_name=#{userName} " +
             "WHERE id=#{id}")
-    Integer updateUserInfo(@Param("id") Long id, @Param("userName") String userName, @Param("avatarUrl") String avatarUrl);
+    Integer updateUserName(@Param("id") Long id, @Param("userName") String userName);
 }

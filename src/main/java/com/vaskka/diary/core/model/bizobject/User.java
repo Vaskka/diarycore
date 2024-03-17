@@ -12,7 +12,7 @@ public class User {
 
     private String userName;
 
-    private String avatarUrl;
+    private String userType;
 
     private Map<String, Object> externParam = new HashMap<>();
 
