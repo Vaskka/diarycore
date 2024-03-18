@@ -39,7 +39,7 @@ public class UserController extends NeedAuthController {
 //    }
 
     @Operation(summary = "登陆")
-    @GetMapping(value = "/auth/login")
+    @PostMapping(value = "/auth/login")
     public LoginResponse login(@RequestBody LoginRequest loginRequest) {
         if (loginRequest == null || loginRequest.getUserName() == null) {
             LogUtil.errorf(log, "login invalid request");
@@ -64,6 +64,8 @@ public class UserController extends NeedAuthController {
             User user = userCenterService.getUserByAuthToken(authToken);
             if (user != null) {
                 return ResultCodeUtil.buildCommonResponseSimple(new UserInfoResponse(), user, ResultCodeEnum.OK);
+            } else {
+                LogUtil.errorf(log, "authToken:{} invalid", authToken);
             }
         }
 
@@ -80,6 +82,6 @@ public class UserController extends NeedAuthController {
             return ResultCodeUtil.buildCommonResponseSimple(new UserInfoResponse(), null, ResultCodeEnum.NEED_LOGIN);
         }
 
-        return ResultCodeUtil.buildCommonResponseSimple(new UserInfoResponse(), user, ResultCodeEnum.NEED_LOGIN);
+        return ResultCodeUtil.buildCommonResponseSimple(new UserInfoResponse(), user, ResultCodeEnum.OK);
     }
 }

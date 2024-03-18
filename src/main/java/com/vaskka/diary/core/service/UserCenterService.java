@@ -177,7 +177,8 @@ public class UserCenterService implements UserCenterFacade {
     }
 
     private String getDigestPsw(String psw) {
-        return DigestUtils.md5Hex(psw);
+        // 暂不需要密码加密
+        return psw;
     }
 
     private String createSession(UserDO userDO) {
