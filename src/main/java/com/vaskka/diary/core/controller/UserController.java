@@ -1,7 +1,5 @@
 package com.vaskka.diary.core.controller;
 
-import com.alibaba.fastjson.JSONObject;
-import com.mysql.cj.log.Log;
 import com.vaskka.diary.core.constant.ResultCodeEnum;
 import com.vaskka.diary.core.facade.AuthFacade;
 import com.vaskka.diary.core.facade.UserCenterFacade;
