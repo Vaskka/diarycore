@@ -8,9 +8,15 @@ public interface UserCenterFacade {
 
     User registerAdmin(String userName, String psw);
 
-    User registerNormal(String userName, String ips);
+    User registerNormal(String userName, List<String> ips);
+
+    User loginAdmin(String userName, String psw);
 
     User getUserProfile(String userId);
+
+    User getUserByAuthToken(String authToken);
+
+    User getUserByIp(String ip);
 
     Integer updateUserIps(String userId, List<String> ips);
 

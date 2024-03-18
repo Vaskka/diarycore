@@ -10,6 +10,8 @@ public enum ResultCodeEnum {
 
     SYS_ERR("系统异常"),
 
+    PSW_NOT_EQUALS("密码不正确"),
+
     ;
     @Getter
     private final String resultMsg;

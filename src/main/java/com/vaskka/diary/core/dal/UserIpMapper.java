@@ -1,13 +1,11 @@
 package com.vaskka.diary.core.dal;
 
 import com.vaskka.diary.core.model.dataobject.UserIpDO;
-import org.apache.ibatis.annotations.Delete;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.*;
 
 import java.util.List;
 
+@Mapper
 public interface UserIpMapper {
 
     @Insert(value = "INSERT INTO user_ip(id, gmt_create, gmt_modified, ip, ref_user_id) " +
