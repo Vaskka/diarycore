@@ -55,7 +55,7 @@ public class UserController extends NeedAuthController {
     }
 
     @Operation(summary = "获取用户详情")
-    @GetMapping(value = "/auth/userinfo")
+    @PostMapping(value = "/auth/userinfo")
     public UserInfoResponse checkLogin(HttpServletRequest httpServletRequest) {
         String authToken = httpServletRequest.getHeader("authToken");
         if (StringUtils.isNotEmpty(authToken)) {

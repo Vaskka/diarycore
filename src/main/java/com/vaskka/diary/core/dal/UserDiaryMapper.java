@@ -11,8 +11,8 @@ public interface UserDiaryMapper {
             "#{userId}, #{diaryId})")
     Integer insertUserDiary(UserDiaryDO userDiaryDO);
 
-    @Delete(value = "DELETE FROM user_diary ud WHERE ud.id=#{id} LIMIT 1")
-    Integer deleteUserIpById(@Param("id") Long id);
+    @Delete(value = "DELETE FROM user_diary WHERE id=#{ID}")
+    Integer deleteUserDiaryById(@Param("ID") Long id);
 
     @Select(value = "SELECT id, gmt_create, gmt_modified, user_id, diary_id " +
             "FROM user_diary ud WHERE ud.user_id=#{userId} AND ud.diary_id=#{diaryId}")

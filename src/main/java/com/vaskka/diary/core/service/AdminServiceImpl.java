@@ -32,7 +32,7 @@ public class AdminServiceImpl implements AdminService {
                 var userDiaryRecord = userDiaryMapper.findByUserIdDiaryId(realUserId, realDiaryId);
 
                 if (userDiaryRecord != null) {
-                    userDiaryMapper.deleteUserIpById(userDiaryRecord.getId());
+                    userDiaryMapper.deleteUserDiaryById(userDiaryRecord.getId());
                 }
 
                 UserDiaryDO userDiaryDO = new UserDiaryDO();

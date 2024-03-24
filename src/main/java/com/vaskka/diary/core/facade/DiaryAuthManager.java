@@ -13,4 +13,6 @@ public interface DiaryAuthManager {
     DiaryWrapper filterPermissionDiaryWrapper(User user, DiaryWrapper diaryWrapper);
 
     List<Diary> filterPermissionDiaryList(User user, DiaryWrapper diaryWrapper);
+
+    Diary processWhenDiaryPermissionDeny(Diary originDiary);
 }

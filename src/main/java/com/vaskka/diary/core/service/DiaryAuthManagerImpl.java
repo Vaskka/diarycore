@@ -53,7 +53,23 @@ public class DiaryAuthManagerImpl implements DiaryAuthManager {
     public List<Diary> filterPermissionDiaryList(User user, DiaryWrapper diaryWrapper) {
         return diaryWrapper.getDiaryList()
                 .stream()
-                .filter(diary -> checkDiaryPermission(Long.parseLong(user.getUid()), Long.parseLong(diary.getDiaryId())))
+                .map(diary -> {
+                    if (checkDiaryPermission(Long.parseLong(user.getUid()), Long.parseLong(diary.getDiaryId()))) {
+                        return diary;
+                    } else {
+                        // 无权限
+                        return processWhenDiaryPermissionDeny(diary);
+                    }
+                })
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public Diary processWhenDiaryPermissionDeny(Diary originDiary) {
+        // 当前实现：清空日记的内容，并替换：无权限
+        originDiary.setSubTitle("");
+        originDiary.getDiaryContent().setContent("暂无权限");
+        originDiary.getDiaryContent().setSubTitle("");
+        return originDiary;
     }
 }
