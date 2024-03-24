@@ -46,4 +46,11 @@ public interface DiaryContentDAO {
      * @return result
      */
     EsSearchResult searchV3(SearchCondition searchCondition);
+
+    /**
+     * 批量修改一批日记的权限关联userId
+     * @param userIdList userIdList
+     * @param diaryIds diaryIds
+     */
+    void updateUserIdListByDiaryId(List<String> userIdList, List<String> diaryIds);
 }

@@ -2,7 +2,7 @@
 import pymysql
 
 
-db_conn = pymysql.connect(host='localhost', port=3307,
+db_conn = pymysql.connect(host='localhost', port=3306,
                              user='root',
                              password='d94d8c79',
                              database='diary',
@@ -110,6 +110,22 @@ def select_by_author_name(author_name):
         sql = "SELECT * FROM `author` WHERE `author_name` = %s"
         cursor.execute(sql, (author_name))
         return cursor.fetchone()
+
+
+def select_all_diary_id():
+    with db_conn.cursor() as cursor:
+        # Create a new record
+        sql = "SELECT id FROM `diary`"
+        cursor.execute(sql)
+        return cursor.fetchall()
+
+
+def select_all_user_id():
+    with db_conn.cursor() as cursor:
+        # Create a new record
+        sql = "SELECT id FROM `user`"
+        cursor.execute(sql)
+        return cursor.fetchall()
 
 
 def setMysqlMock(mock):

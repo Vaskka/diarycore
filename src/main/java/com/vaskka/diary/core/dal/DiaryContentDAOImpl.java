@@ -3,16 +3,16 @@ package com.vaskka.diary.core.dal;
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch._types.FieldValue;
 import co.elastic.clients.elasticsearch._types.Result;
+import co.elastic.clients.elasticsearch._types.Script;
 import co.elastic.clients.elasticsearch._types.aggregations.CalendarInterval;
 import co.elastic.clients.elasticsearch._types.aggregations.DateHistogramBucket;
 import co.elastic.clients.elasticsearch._types.query_dsl.MatchQuery;
 import co.elastic.clients.elasticsearch._types.query_dsl.Query;
 import co.elastic.clients.elasticsearch._types.query_dsl.RangeQuery;
 import co.elastic.clients.elasticsearch._types.query_dsl.TermsQuery;
-import co.elastic.clients.elasticsearch.core.GetResponse;
-import co.elastic.clients.elasticsearch.core.IndexResponse;
-import co.elastic.clients.elasticsearch.core.SearchRequest;
-import co.elastic.clients.elasticsearch.core.SearchResponse;
+import co.elastic.clients.elasticsearch.core.*;
+import co.elastic.clients.elasticsearch.core.bulk.BulkOperation;
+import co.elastic.clients.elasticsearch.core.bulk.UpdateAction;
 import co.elastic.clients.elasticsearch.core.search.Hit;
 import co.elastic.clients.json.JsonData;
 import com.google.common.collect.Lists;
@@ -25,6 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -266,6 +267,32 @@ public class DiaryContentDAOImpl implements DiaryContentDAO {
         } catch (Exception e) {
             LogUtil.errorf(log, "[es],search pageable,error,", e);
             return res;
+        }
+    }
+
+    @Override
+    public void updateUserIdListByDiaryId(List<String> userIdList, List<String> diaryIds) {
+        try {
+            var diaryContentDOForUpdate = new DiaryContent();
+            diaryContentDOForUpdate.setUserIdList(userIdList);
+            var bulkResponse = elasticsearchClient.bulk(b -> b
+                    .index(DIARY_CONTENT_INDEX)
+                    .operations(diaryIds.stream()
+                            .map(diaryId -> BulkOperation.of(
+                                bulkOpBuilder -> bulkOpBuilder
+                                        .update(u -> u
+                                                .id(diaryId)
+                                                .index(DIARY_CONTENT_INDEX)
+                                                .action(UpdateAction.of(uab -> uab
+                                                        .doc(diaryContentDOForUpdate))))
+                            ))
+                            .collect(Collectors.toList())
+                    )
+            );
+            LogUtil.infof(log, "[updateUserIdListByDiaryId],esResp:{}", bulkResponse);
+        } catch (Exception e) {
+            LogUtil.errorf(log, "[updateUserIdListByDiaryId] ex", e);
+            throw new RuntimeException(e);
         }
     }
 
