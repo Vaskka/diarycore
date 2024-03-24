@@ -91,7 +91,7 @@ public class UserAuthFilter implements Filter {
             return null;
         }
 
-        LogUtil.infof(log, "auth success,user={}", user);
+        // LogUtil.infof(log, "auth success,user={}", user);
         JSONObject jsonBody = JSONObject.parseObject(originalRequestBody);
         jsonBody.put("user", user);
         return jsonBody.toJSONString();
