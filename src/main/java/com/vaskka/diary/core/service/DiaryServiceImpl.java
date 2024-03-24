@@ -6,6 +6,7 @@ import com.vaskka.diary.core.dal.DiaryMapper;
 import com.vaskka.diary.core.exceptions.AuthorNotExistException;
 import com.vaskka.diary.core.exceptions.EsException;
 import com.vaskka.diary.core.facade.AuthorFacade;
+import com.vaskka.diary.core.facade.DiaryAuthManager;
 import com.vaskka.diary.core.facade.DiaryFacade;
 import com.vaskka.diary.core.model.bizobject.*;
 import com.vaskka.diary.core.model.dataobject.DiaryDO;
@@ -30,6 +31,9 @@ public class DiaryServiceImpl implements DiaryFacade {
 
     @Resource
     private AuthorFacade authorServiceImpl;
+
+    @Resource
+    private DiaryAuthManager defaultDiaryAuthManager;
 
     @Override
     public DiaryWrapper findByAuthor(String authorId) {

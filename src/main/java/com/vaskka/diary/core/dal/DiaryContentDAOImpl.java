@@ -152,6 +152,12 @@ public class DiaryContentDAOImpl implements DiaryContentDAO {
         res.setTotalPage(0);
         res.setTotalRecordCount(0L);
         res.setSizeOfPage(searchCondition.getSize());
+        if (searchCondition.getUser() == null) {
+            // 用户不存在不走查询
+            LogUtil.infof(log, "[searchV3],user not exist.");
+            return res;
+        }
+
         SearchResponse<DiaryContent> response;
         try {
             // 搜索关键词query
@@ -203,6 +209,13 @@ public class DiaryContentDAOImpl implements DiaryContentDAO {
                 )._toQuery();
             }
 
+            // user 权限限定
+            Query userAuthQuery = TermsQuery.of(m -> m
+                    .field("userIdList")
+                    .terms(t -> t
+                            .value(Lists.newArrayList(FieldValue.of(searchCondition.getUser().getUid()))))
+            )._toQuery();
+
             // 整合最后的query
             List<Query> finalQuery = new ArrayList<>(searchTextList);
             if (byDateRange != null) {
@@ -222,6 +235,7 @@ public class DiaryContentDAOImpl implements DiaryContentDAO {
                             .bool(b -> b
                                     .must(finalQuery)
                                     .mustNot(finalQueryNotIn)
+                                    .filter(userAuthQuery)
                             )
                     )
                     .aggregations("countPerYear", a -> a

@@ -2,6 +2,8 @@ package com.vaskka.diary.core.model.bizobject;
 
 import lombok.Data;
 
+import java.util.List;
+
 /**
  * 日记的内容
  * 后续可扩展注释之类的功能
@@ -22,5 +24,7 @@ public class DiaryContent {
     private long timestamp;
 
     private String comment;
+
+    private List<String> userIdList;
 
 }

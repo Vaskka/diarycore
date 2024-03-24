@@ -89,4 +89,6 @@ public class SearchCondition {
     private Integer page;
 
     private Integer size;
+
+    private User user;
 }
