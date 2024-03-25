@@ -236,7 +236,7 @@ public class DiaryContentDAOImpl implements DiaryContentDAO {
                             .bool(b -> b
                                     .must(finalQuery)
                                     .mustNot(finalQueryNotIn)
-                                    .filter(userAuthQuery)
+                                    .should(userAuthQuery)
                             )
                     )
                     .aggregations("countPerYear", a -> a
