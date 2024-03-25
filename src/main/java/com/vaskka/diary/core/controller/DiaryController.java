@@ -79,7 +79,7 @@ public class DiaryController extends NeedAuthController {
     public SingleDiaryResponse detailBySubId(@PathVariable(value = "diarySubId") String diarySubId, @RequestBody NeedAuthRequest request) {
         var data = diaryServiceImpl.findSubDiaryById(diarySubId);
 
-        if (request.getUser() == null) {
+        if (request.getUser() == null || data == null) {
             return ResultCodeUtil.buildCommonResponse(SingleDiaryResponse::new, null, ResultCodeEnum.OK);
         } else {
             if (defaultDiaryAuthManager.checkDiaryPermission(Long.parseLong(request.getUser().getUid()), Long.parseLong(data.getDiaryId()))) {
@@ -94,7 +94,7 @@ public class DiaryController extends NeedAuthController {
     @PostMapping(value = "/pageable/search/multi/{size}/{page}")
     public SearchDiaryPageableResponse searchV3(@PathVariable("size") Integer size, @PathVariable("page") Integer page,
                                               @RequestBody SearchDiaryRequest request) {
-        LogUtil.infof(log, "[searchV3],search key={},", request.getSearchText());
+        LogUtil.infof(log, "[searchV3],search request={},", request);
         var searchCondition = new SearchCondition();
         searchCondition.setUser(request.getUser());
         searchCondition.setPage(page);

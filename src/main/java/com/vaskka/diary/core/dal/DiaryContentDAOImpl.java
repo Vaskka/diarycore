@@ -302,7 +302,7 @@ public class DiaryContentDAOImpl implements DiaryContentDAO {
         for (Hit<DiaryContent> hit: hits) {
             DiaryContent content = hit.source();
             if (content != null) {
-                log.info("[es],simpleSearch,found,score={}", hit.score());
+                // log.info("[es],simpleSearch,found,score={}", hit.score());
                 res.add(content);
             }
         }
@@ -314,7 +314,7 @@ public class DiaryContentDAOImpl implements DiaryContentDAO {
         for (Hit<DiaryContent> hit: hits) {
             DiaryContent content = hit.source();
             if (content != null) {
-                log.info("[es],simpleSearch,found,score={}", hit.score());
+                // log.info("[es],simpleSearch,found,score={}", hit.score());
                 res.getData().add(content);
             }
         }

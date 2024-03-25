@@ -180,6 +180,9 @@ public class DiaryServiceImpl implements DiaryFacade {
     }
 
     private Diary buildDiary(DiaryDO diaryDO) {
+        if (diaryDO == null) {
+            return null;
+        }
         Diary diary = new Diary();
         diary.setAuthorId(String.valueOf(diaryDO.getAuthorId()));
         diary.setAuthorName(authorServiceImpl.findById(String.valueOf(diaryDO.getAuthorId())).getAuthorName());

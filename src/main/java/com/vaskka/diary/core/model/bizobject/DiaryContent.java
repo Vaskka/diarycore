@@ -21,7 +21,7 @@ public class DiaryContent {
 
     private String subTitle;
 
-    private long timestamp;
+    private Long timestamp;
 
     private String comment;
 
