@@ -8,17 +8,17 @@ docker build -t diarycore:latest .
 DATA_PATH=./data
 
 if [ ! -d "$DATA_PATH/mysql" ]; then
-    mkdir -p "$directory/mysql"
-    echo "$directory/mysql 目录已创建"
+    mkdir -p "$DATA_PATH/mysql"
+    echo "$DATA_PATH/mysql 目录已创建"
 else
-    echo "$directory/mysql 目录已存在"
+    echo "$DATA_PATH/mysql 目录已存在"
 fi
 
 if [ ! -d "$DATA_PATH/es" ]; then
-    mkdir -p "$directory/es"
-    echo "$directory/es 目录已创建"
+    mkdir -p "$DATA_PATH/es"
+    echo "$DATA_PATH/es 目录已创建"
 else
-    echo "$directory/es 目录已存在"
+    echo "$DATA_PATH/es 目录已存在"
 fi
 
 DATA_PATH=$DATA_PATH docker-compose up

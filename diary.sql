@@ -22,9 +22,10 @@ USE diary;
 -- Table structure for table `author`
 --
 
+DROP TABLE IF EXISTS `author`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE IF NOT EXISTS `author` (
+CREATE TABLE `author` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `gmt_create` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `gmt_modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -33,16 +34,17 @@ CREATE TABLE IF NOT EXISTS `author` (
   `extern_param` varchar(2048) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `u_index_name_idx` (`author_name`)
-) ENGINE=InnoDB AUTO_INCREMENT=37 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `author_type`
 --
 
+DROP TABLE IF EXISTS `author_type`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE IF NOT EXISTS `author_type` (
+CREATE TABLE `author_type` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `gmt_create` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `gmt_modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -50,16 +52,17 @@ CREATE TABLE IF NOT EXISTS `author_type` (
   `author_type_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `extern_param` varchar(1024) COLLATE utf8mb4_unicode_ci DEFAULT '{}',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `diary`
 --
 
+DROP TABLE IF EXISTS `diary`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE IF NOT EXISTS `diary` (
+CREATE TABLE `diary` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `gmt_create` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `gmt_modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -75,25 +78,85 @@ CREATE TABLE IF NOT EXISTS `diary` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `u_author_title_sub_title_idx` (`author_id`,`diary_title`,`sub_title`),
   UNIQUE KEY `u_author_title_timestamp` (`author_id`,`diary_title`,`diary_date_timestamp`)
-) ENGINE=InnoDB AUTO_INCREMENT=43738 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `user`
 --
 
+DROP TABLE IF EXISTS `user`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE IF NOT EXISTS `user` (
+CREATE TABLE `user` (
   `id` bigint(20) NOT NULL,
   `gmt_create` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `gmt_modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `user_name` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `avatar_url` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `ips` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `user_type` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `psw` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `extern_param` varchar(2048) COLLATE utf8_unicode_ci DEFAULT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `user_name_uidx` (`user_name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `user_diary`
+--
+
+DROP TABLE IF EXISTS `user_diary`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `user_diary` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `gmt_create` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `gmt_modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `user_id` bigint(20) NOT NULL,
+  `diary_id` bigint(20) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uidx_u_d` (`user_id`,`diary_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `user_ip`
+--
+
+DROP TABLE IF EXISTS `user_ip`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `user_ip` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `gmt_create` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `gmt_modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `ip` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `ref_user_id` bigint(20) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uidx_ip` (`ip`),
+  KEY `idx_user_id` (`ref_user_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `user_session`
+--
+
+DROP TABLE IF EXISTS `user_session`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `user_session` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `gmt_create` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `gmt_modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `user_id` bigint(20) NOT NULL,
+  `auth_token` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `expire_timestamp` bigint(20) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `idx_uid_expire` (`user_id`,`expire_timestamp`),
+  KEY `idx_authtoken_expiretimestamp` (`auth_token`,`expire_timestamp`)
+) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -105,4 +168,4 @@ CREATE TABLE IF NOT EXISTS `user` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-01-09 22:13:50
+-- Dump completed on 2024-03-27 20:41:04
